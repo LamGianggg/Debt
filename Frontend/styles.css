@@ -1,0 +1,82 @@
+/* Custom Stripe Dashboard styling additions */
+@layer base {
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Custom scrollbar for modern subtle appearance */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Nav Item active styling matching user screenshot exactly */
+.nav-item {
+  color: #4F566B;
+  transition: all 0.15s ease;
+}
+.nav-item svg {
+  color: #64748B;
+  stroke: #64748B;
+  transition: all 0.15s ease;
+}
+.nav-item:hover {
+  color: #0F172A;
+  background-color: #F8FAFC;
+}
+.nav-item:hover svg {
+  color: #334155;
+  stroke: #334155;
+}
+
+/* Active Nav Item - exact match to screenshot (purple #635BFF, no bulky bg) */
+.nav-item.nav-active {
+  color: #635BFF !important;
+  font-weight: 600 !important;
+}
+.nav-item.nav-active svg {
+  color: #635BFF !important;
+  stroke: #635BFF !important;
+}
+
+/* Sub-nav pills */
+.subnav-active {
+  color: #635BFF !important;
+  font-weight: 600 !important;
+  border-bottom: 2px solid #635BFF !important;
+}
+
+/* Table row transition */
+tr {
+  transition: background-color 0.15s ease-in-out;
+}
+
+/* Status badges */
+.badge-success {
+  background-color: #DEF7EC;
+  color: #03543F;
+}
+.badge-warning {
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+.badge-danger {
+  background-color: #FDE8E8;
+  color: #9B1C1C;
+}
+.badge-neutral {
+  background-color: #F1F5F9;
+  color: #475569;
+}

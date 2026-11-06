@@ -1,0 +1,171 @@
+[
+  {
+    "id": "12:2",
+    "name": "Cactus Practice - Customers / Jane Diaz",
+    "width": 1440,
+    "height": 920,
+    "childCount": 3,
+    "childrenNames": [
+      "Dashboard / Sidebar",
+      "Dashboard / Topbar",
+      "Dashboard / Content"
+    ],
+    "uniqueColorsCount": 1,
+    "textCount": 0,
+    "sampleTexts": []
+  },
+  {
+    "id": "12:258",
+    "name": "Cactus Practice - Customers / All Customers",
+    "width": 1440,
+    "height": 920,
+    "childCount": 3,
+    "childrenNames": [
+      "Sidebar",
+      "Topbar",
+      "Content"
+    ],
+    "uniqueColorsCount": 1,
+    "textCount": 0,
+    "sampleTexts": []
+  },
+  {
+    "id": "13:477",
+    "name": "Cactus Practice - Design System & UI Components",
+    "width": 560,
+    "height": 920,
+    "childCount": 26,
+    "childrenNames": [
+      "DSTitle",
+      "DSSub",
+      "DSDiv1",
+      "DS_BtnLabel",
+      "Comp_Btn_Primary",
+      "Comp_Btn_Outline",
+      "Comp_Link",
+      "DS_BadgeLabel",
+      "Badge_Comp_Succ",
+      "Badge_Comp_Act",
+      "Badge_Comp_Def",
+      "Badge_Comp_Neut",
+      "DS_InputLabel",
+      "Comp_Input",
+      "ToggleSwitch",
+      "Lbl_SwOff",
+      "ToggleSwitch",
+      "Lbl_SwOn",
+      "DS_CardLabel",
+      "Comp_Card",
+      "DS_ColorsLabel",
+      "Col_Indigo #4F46E5",
+      "Col_Emerald #10B981",
+      "Col_Slate #0F172A",
+      "Col_Muted #64748B",
+      "Col_Light #F8FAFC"
+    ],
+    "uniqueColorsCount": 2,
+    "textCount": 10,
+    "sampleTexts": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "id": "13:520",
+    "name": "Cactus Practice - Payments / All Transactions",
+    "width": 1440,
+    "height": 920,
+    "childCount": 3,
+    "childrenNames": [
+      "Sidebar",
+      "Topbar",
+      "Content"
+    ],
+    "uniqueColorsCount": 1,
+    "textCount": 0,
+    "sampleTexts": []
+  },
+  {
+    "id": "14:701",
+    "name": "Cactus Practice - Home / Dashboard Overview",
+    "width": 1440,
+    "height": 920,
+    "childCount": 3,
+    "childrenNames": [
+      "Sidebar",
+      "Topbar",
+      "Content"
+    ],
+    "uniqueColorsCount": 1,
+    "textCount": 0,
+    "sampleTexts": []
+  },
+  {
+    "id": "14:972",
+    "name": "Cactus Practice - Balances / Payouts Overview",
+    "width": 1440,
+    "height": 920,
+    "childCount": 3,
+    "childrenNames": [
+      "Sidebar",
+      "Topbar",
+      "Content"
+    ],
+    "uniqueColorsCount": 1,
+    "textCount": 0,
+    "sampleTexts": []
+  },
+  {
+    "id": "14:1110",
+    "name": "Cactus Practice - Products / Pricing Catalog",
+    "width": 1440,
+    "height": 920,
+    "childCount": 3,
+    "childrenNames": [
+      "Sidebar",
+      "Topbar",
+      "Content"
+    ],
+    "uniqueColorsCount": 1,
+    "textCount": 0,
+    "sampleTexts": []
+  },
+  {
+    "id": "14:1235",
+    "name": "Cactus Practice - Connected accounts / Clinics",
+    "width": 1440,
+    "height": 920,
+    "childCount": 3,
+    "childrenNames": [
+      "Sidebar",
+      "Topbar",
+      "Content"
+    ],
+    "uniqueColorsCount": 1,
+    "textCount": 0,
+    "sampleTexts": []
+  },
+  {
+    "id": "14:1260",
+    "name": "Cactus Practice - Reports / Analytics",
+    "width": 1440,
+    "height": 920,
+    "childCount": 3,
+    "childrenNames": [
+      "Sidebar",
+      "Topbar",
+      "Content"
+    ],
+    "uniqueColorsCount": 1,
+    "textCount": 0,
+    "sampleTexts": []
+  }
+]
