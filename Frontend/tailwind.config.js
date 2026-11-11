@@ -7,28 +7,36 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+      },
+      boxShadow: {
+        'soft-xs': '0 1px 2px rgba(0, 0, 0, 0.03)',
+        'soft-sm': '0 2px 8px rgba(0, 0, 0, 0.04)',
+        'soft-md': '0 8px 24px rgba(15, 23, 42, 0.06)',
+        'soft-lg': '0 16px 40px rgba(15, 23, 42, 0.08)',
+        'soft-hover': '0 12px 28px -4px rgba(79, 70, 229, 0.12)',
       },
       colors: {
-        stripe: {
-          purple: '#635BFF',
-          purpleHover: '#5851EA',
-          indigo: '#4F46E5',
-          indigoHover: '#4338CA',
-          dark: '#0A2540',
-          slate: '#4F566B',
-          border: '#E3E8EE',
-          bg: '#F8F9FB',
-          sidebar: '#FFFFFF',
-          greenBadgeBg: '#DEF7EC',
-          greenBadgeText: '#03543F',
-          blueBadgeBg: '#E0EAFF',
-          blueBadgeText: '#3559E0',
-          yellowBadgeBg: '#FEF08A',
-          yellowBadgeText: '#854D0E',
-          redBadgeBg: '#FEE2E2',
-          redBadgeText: '#991B1B'
+        upflow: {
+          canvas: '#F8FAFC',
+          card: '#FFFFFF',
+          primary: '#4F46E5',
+          primaryHover: '#4338CA',
+          navy: '#0F172A',
+          charcoal: '#1E293B',
+          muted: '#64748B',
+          lightMuted: '#94A3B8',
+          border: '#F1F5F9',
+          borderSubtle: '#E2E8F0',
+          coral: '#FF6B4A',
+          amber: '#F59E0B',
+          emerald: '#10B981',
+          mintBg: '#ECFDF5',
+          honeyBg: '#FEF3C7',
+          roseBg: '#FEE2E2',
+          irisBg: '#EEF2FF',
+          skyBg: '#F0F9FF'
         }
       }
     },

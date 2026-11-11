@@ -50,12 +50,22 @@ public class DataInitializer implements CommandLineRunner {
     @Transactional
     public void run(String... args) {
         seedUsers();
+        // If legacy Marcus Vance cactus practice data is present, purge to re-seed clean B2B Debt data
+        if (customerRepository.existsById("cus_O4133f625gg") || !customerRepository.existsById("cus_DEBT_001")) {
+            logger.info("Refreshing database with authentic B2B O2C Debt Management records...");
+            transactionRepository.deleteAll();
+            payoutRepository.deleteAll();
+            subscriptionRepository.deleteAll();
+            customerRepository.deleteAll();
+            connectedAccountRepository.deleteAll();
+            productRepository.deleteAll();
+        }
         seedCustomersAndSubscriptions();
         seedTransactions();
         seedPayouts();
         seedConnectedAccounts();
         seedProducts();
-        logger.info(">>> Debt Management System (Hệ thống Quản lý Công nợ) Initialized Successfully! <<<");
+        logger.info(">>> Debt Management System (Hệ thống Quản lý Công nợ B2B O2C) Initialized Successfully! <<<");
     }
 
     private void seedUsers() {

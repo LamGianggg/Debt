@@ -6,8 +6,19 @@ const API_BASE = '/api';
 async function request(endpoint, options = {}) {
   const url = `${API_BASE}${endpoint}`;
   const token = localStorage.getItem('cactus_token');
+  const savedUser = localStorage.getItem('cactus_user');
+  let currentRole = 'ROLE_ADMIN';
+  if (savedUser) {
+    try {
+      const u = JSON.parse(savedUser);
+      if (u.roles && u.roles.includes('ROLE_ADMIN')) currentRole = 'ROLE_ADMIN';
+      else if (u.roles && u.roles.includes('ROLE_STAFF')) currentRole = 'ROLE_STAFF';
+      else currentRole = 'ROLE_USER';
+    } catch (_) {}
+  }
   const headers = {
     'Content-Type': 'application/json',
+    'X-User-Role': currentRole,
     ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
     ...(options.headers || {})
   };
@@ -178,12 +189,87 @@ export const api = {
     });
   },
 
+  // O2C & AR Automation Workflow APIs
+  async getO2CKpis() {
+    return request('/o2c/kpis');
+  },
+
+  async getOrders() {
+    return request('/o2c/orders');
+  },
+
+  async approveOrderCredit(id, approver = 'Admin / Head of Credit') {
+    return request(`/o2c/orders/${encodeURIComponent(id)}/approve?approver=${encodeURIComponent(approver)}`, {
+      method: 'POST'
+    });
+  },
+
+  async getInvoices() {
+    return request('/o2c/invoices');
+  },
+
+  async payInvoice(id, amount = 'Full') {
+    return request(`/o2c/invoices/${encodeURIComponent(id)}/pay`, {
+      method: 'POST',
+      body: JSON.stringify({ amount })
+    });
+  },
+
+  async getDunningWorklist() {
+    return request('/o2c/dunning');
+  },
+
+  async sendDunningReminder(id) {
+    return request(`/o2c/dunning/${encodeURIComponent(id)}/send`, {
+      method: 'POST'
+    });
+  },
+
+  async getPtpDisputes() {
+    return request('/o2c/ptp-disputes');
+  },
+
+  async createPtp(data) {
+    return request('/o2c/ptp', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+
+  async resolveDispute(id, resolution = 'Đã đối soát và chấp thuận điều chỉnh Credit Memo') {
+    return request(`/o2c/disputes/${encodeURIComponent(id)}/resolve`, {
+      method: 'POST',
+      body: JSON.stringify({ resolution })
+    });
+  },
+
+  async getReconciliationFeeds() {
+    return request('/o2c/reconciliation');
+  },
+
+  async applyDeMinimis(txId) {
+    return request(`/o2c/reconciliation/${encodeURIComponent(txId)}/de-minimis`, {
+      method: 'POST'
+    });
+  },
+
+  async getMakerCheckerRequests() {
+    return request('/o2c/maker-checker');
+  },
+
+  async processMakerChecker(id, approved = true, checker = 'Admin / Head of Credit') {
+    return request(`/o2c/maker-checker/${encodeURIComponent(id)}/process`, {
+      method: 'POST',
+      body: JSON.stringify({ approved, checker })
+    });
+  },
+
   // Direct file downloads (CSV / JSON export)
   downloadExport(format = 'csv') {
     const url = `${API_BASE}/transactions/export/${format}`;
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `cactus_transactions.${format}`);
+    link.setAttribute('download', `debt_transactions.${format}`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

@@ -1,18 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   body {
-    @apply bg-[#F8F9FA] text-[#0F172A] font-sans antialiased;
+    @apply bg-[#F8FAFC] text-[#0F172A] font-sans antialiased;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     color: #0F172A;
+    background-color: #F8FAFC;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Upflow & Fortinvo Design System Utility Components */
+@layer components {
+  .card-upflow {
+    @apply bg-white rounded-2xl border border-slate-100/90 shadow-soft-xs hover:shadow-soft-md hover:border-slate-200/80 transition-all duration-200;
+  }
+  
+  .badge-soft-emerald {
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100;
+  }
+
+  .badge-soft-amber {
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-100;
+  }
+
+  .badge-soft-rose {
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-100;
+  }
+
+  .badge-soft-indigo {
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100;
   }
 }
 
 /* Custom subtle scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -20,17 +48,17 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #E2E8F0;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #CBD5E1;
 }
 
 /* Table row transition */
 .table-row-hover {
-  transition: background-color 0.15s ease-in-out;
+  transition: all 0.15s ease-in-out;
 }
 .table-row-hover:hover {
   background-color: #F8FAFC;

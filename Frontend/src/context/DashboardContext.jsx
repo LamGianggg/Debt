@@ -4,7 +4,14 @@ import {
   initialCustomers, 
   initialPayouts, 
   initialConnectedAccounts, 
-  initialProducts 
+  initialProducts,
+  initialDashboardStats,
+  initialSalesOrders,
+  initialInvoices,
+  initialDunningWorklist,
+  initialPTPList,
+  initialDisputesList,
+  initialMakerCheckerApprovals
 } from '../data/mockData';
 import { api } from '../services/api';
 
@@ -105,6 +112,16 @@ export function DashboardProvider({ children }) {
   const [products, setProducts] = useState(initialProducts);
   const [connectedAccounts, setConnectedAccounts] = useState(initialConnectedAccounts);
 
+  // O2C & AR Automation States
+  const [salesOrders, setSalesOrders] = useState(initialSalesOrders);
+  const [invoices, setInvoices] = useState(initialInvoices);
+  const [dunningWorklist, setDunningWorklist] = useState(initialDunningWorklist);
+  const [ptpList, setPtpList] = useState(initialPTPList);
+  const [disputesList, setDisputesList] = useState(initialDisputesList);
+  const [makerCheckerApprovals, setMakerCheckerApprovals] = useState(initialMakerCheckerApprovals);
+  const [o2cKpis, setO2cKpis] = useState(initialDashboardStats);
+  const [reconciliations, setReconciliations] = useState([]);
+
   // Computed metrics from backend
   const [balanceSummary, setBalanceSummary] = useState({
     available: "$42,850.00",
@@ -137,14 +154,24 @@ export function DashboardProvider({ children }) {
 
       setIsBackendConnected(true);
 
-      const [txList, custList, poList, prodList, acctList, poSummary, overview] = await Promise.allSettled([
+      const [
+        txList, custList, poList, prodList, acctList, poSummary, overview,
+        ordersRes, invRes, dunningRes, ptpDispRes, reconRes, mcRes, kpisRes
+      ] = await Promise.allSettled([
         api.getTransactions(),
         api.getCustomers(),
         api.getPayouts(),
         api.getProducts(),
         api.getConnectedAccounts(),
         api.getPayoutSummary(),
-        api.getOverview(timeframe)
+        api.getOverview(timeframe),
+        api.getOrders(),
+        api.getInvoices(),
+        api.getDunningWorklist(),
+        api.getPtpDisputes(),
+        api.getReconciliationFeeds(),
+        api.getMakerCheckerRequests(),
+        api.getO2CKpis()
       ]);
 
       if (txList.status === 'fulfilled' && Array.isArray(txList.value) && txList.value.length > 0) {
@@ -170,6 +197,35 @@ export function DashboardProvider({ children }) {
       }
       if (overview.status === 'fulfilled' && overview.value) {
         setOverviewMetrics(overview.value);
+      }
+
+      // Sync O2C Backend feeds
+      if (ordersRes.status === 'fulfilled' && Array.isArray(ordersRes.value) && ordersRes.value.length > 0) {
+        setSalesOrders(ordersRes.value);
+      }
+      if (invRes.status === 'fulfilled' && Array.isArray(invRes.value) && invRes.value.length > 0) {
+        setInvoices(invRes.value);
+      }
+      if (dunningRes.status === 'fulfilled' && Array.isArray(dunningRes.value) && dunningRes.value.length > 0) {
+        setDunningWorklist(dunningRes.value);
+      }
+      if (ptpDispRes.status === 'fulfilled' && Array.isArray(ptpDispRes.value) && ptpDispRes.value.length > 0) {
+        setPtpList(ptpDispRes.value.filter(x => x.type === 'PTP'));
+        setDisputesList(ptpDispRes.value.filter(x => x.type === 'DISPUTE'));
+      }
+      if (reconRes.status === 'fulfilled' && Array.isArray(reconRes.value) && reconRes.value.length > 0) {
+        setReconciliations(reconRes.value);
+      }
+      if (mcRes.status === 'fulfilled' && Array.isArray(mcRes.value) && mcRes.value.length > 0) {
+        setMakerCheckerApprovals(mcRes.value);
+      }
+      if (kpisRes.status === 'fulfilled' && kpisRes.value) {
+        setO2cKpis(prev => ({
+          ...prev,
+          totalExposure: kpisRes.value.totalReceivables || prev.totalExposure,
+          dso: parseFloat(kpisRes.value.dsoDays) || prev.dso,
+          stpRate: parseFloat(kpisRes.value.autoMatchRate) || prev.stpRate
+        }));
       }
     } catch (err) {
       console.warn("Backend sync notice:", err);
@@ -360,6 +416,84 @@ export function DashboardProvider({ children }) {
     api.downloadExport(format);
   };
 
+  // O2C Action Handlers
+  const approveOrderCredit = async (orderId) => {
+    try {
+      if (isBackendConnected) {
+        await api.approveOrderCredit(orderId, currentUser?.username || 'Admin');
+      }
+    } catch (e) {
+      console.warn("Backend order approve fallback:", e);
+    }
+    setSalesOrders(prev => prev.map(so => so.id === orderId ? { ...so, approvalStatus: 'APPROVED', creditStatus: 'PASS', checker: `${currentUser?.username || 'Admin'} (Đã duyệt)` } : so));
+  };
+
+  const payInvoice = async (invoiceId, amount = 'Full') => {
+    try {
+      if (isBackendConnected) {
+        await api.payInvoice(invoiceId, amount);
+      }
+    } catch (e) {
+      console.warn("Backend pay invoice fallback:", e);
+    }
+    setInvoices(prev => prev.map(inv => inv.id === invoiceId ? { ...inv, paymentStatus: 'PAID', remainingAmount: '0 ₫' } : inv));
+  };
+
+  const sendDunningReminder = async (dunningId) => {
+    try {
+      if (isBackendConnected) {
+        await api.sendDunningReminder(dunningId);
+      }
+    } catch (e) {
+      console.warn("Backend dunning reminder fallback:", e);
+    }
+    setDunningWorklist(prev => prev.map(d => d.id === dunningId ? { ...d, status: 'SENT', sentTime: 'Vừa gửi qua ZNS + Email' } : d));
+  };
+
+  const createPtp = async (data) => {
+    try {
+      if (isBackendConnected) {
+        await api.createPtp(data);
+      }
+    } catch (e) {
+      console.warn("Backend create PTP fallback:", e);
+    }
+    setPtpList(prev => [data, ...prev]);
+  };
+
+  const resolveDispute = async (disputeId, resolution) => {
+    try {
+      if (isBackendConnected) {
+        await api.resolveDispute(disputeId, resolution);
+      }
+    } catch (e) {
+      console.warn("Backend resolve dispute fallback:", e);
+    }
+    setDisputesList(prev => prev.map(d => d.id === disputeId ? { ...d, status: 'RESOLVED', resolution } : d));
+  };
+
+  const applyDeMinimis = async (txId) => {
+    try {
+      if (isBackendConnected) {
+        await api.applyDeMinimis(txId);
+      }
+    } catch (e) {
+      console.warn("Backend apply De Minimis fallback:", e);
+    }
+    setReconciliations(prev => prev.map(r => r.txId === txId ? { ...r, status: 'DE_MINIMIS_WRITTEN_OFF', deMinimisDiff: 'Đã cấn trừ De Minimis (≤ 50.000 VNĐ)' } : r));
+  };
+
+  const processMakerChecker = async (id, approved = true) => {
+    try {
+      if (isBackendConnected) {
+        await api.processMakerChecker(id, approved, currentUser?.username || 'Admin');
+      }
+    } catch (e) {
+      console.warn("Backend maker checker fallback:", e);
+    }
+    setMakerCheckerApprovals(prev => prev.map(a => a.id === id ? { ...a, status: approved ? 'APPROVED' : 'REJECTED' } : a));
+  };
+
   return (
     <DashboardContext.Provider value={{
       currentView,
@@ -402,7 +536,31 @@ export function DashboardProvider({ children }) {
       setSelectedTransaction,
       activeModal,
       setActiveModal,
-      exportData
+      exportData,
+      // O2C States & Actions
+      salesOrders,
+      setSalesOrders,
+      approveOrderCredit,
+      invoices,
+      setInvoices,
+      payInvoice,
+      dunningWorklist,
+      setDunningWorklist,
+      sendDunningReminder,
+      ptpList,
+      setPtpList,
+      createPtp,
+      disputesList,
+      setDisputesList,
+      resolveDispute,
+      makerCheckerApprovals,
+      setMakerCheckerApprovals,
+      processMakerChecker,
+      o2cKpis,
+      setO2cKpis,
+      reconciliations,
+      setReconciliations,
+      applyDeMinimis
     }}>
       {children}
     </DashboardContext.Provider>

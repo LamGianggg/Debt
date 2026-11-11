@@ -3,7 +3,9 @@ import { DashboardProvider, useDashboard } from './context/DashboardContext';
 import Sidebar from './components/common/Sidebar';
 import Topbar from './components/common/Topbar';
 import TestModeBanner from './components/common/TestModeBanner';
+import AccessDeniedView from './components/common/AccessDeniedView';
 import Modal from './components/common/Modal';
+import { Crown, Stethoscope, User, ShieldAlert, Lock } from 'lucide-react';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -17,6 +19,51 @@ import ReportsPage from './pages/ReportsPage';
 import DesignSystemPage from './pages/DesignSystemPage';
 import UsersPage from './pages/UsersPage';
 
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('ErrorBoundary caught error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+          <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-slate-100 p-6 text-center space-y-4">
+            <div className="w-12 h-12 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto text-xl font-bold">
+              ⚠
+            </div>
+            <h2 className="text-lg font-bold text-slate-900">Đã xảy ra lỗi giao diện</h2>
+            <p className="text-xs text-slate-500">
+              {this.state.error?.message || 'Có lỗi phát sinh trong quá trình hiển thị giao diện.'}
+            </p>
+            <div className="pt-2 flex justify-center gap-3">
+              <button
+                onClick={() => {
+                  this.setState({ hasError: false, error: null });
+                  window.location.reload();
+                }}
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-xs transition"
+              >
+                Tải lại trang
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 function DashboardContent() {
   const { 
     currentView, 
@@ -26,7 +73,10 @@ function DashboardContent() {
     setActiveModal,
     addTransaction,
     exportData,
-    customers
+    customers,
+    currentUser,
+    isAdmin,
+    isStaff
   } = useDashboard();
 
   // Create payment modal state
@@ -34,6 +84,8 @@ function DashboardContent() {
   const [payCustomer, setPayCustomer] = useState(customers[0]?.name || 'Jane Diaz');
   const [payDesc, setPayDesc] = useState('Medical Consultation Fee');
   const [paySuccess, setPaySuccess] = useState(false);
+
+  const isGuest = !isStaff;
 
   const handleCreatePaymentSubmit = async (e) => {
     e.preventDefault();
@@ -66,9 +118,60 @@ function DashboardContent() {
   };
 
   const renderActivePage = () => {
+    // --- 1. RBAC GUARDS FOR GUEST / ROLE_USER ---
+    if (isGuest) {
+      if (['credit', 'dunning', 'bank_recon', 'maker_checker'].includes(currentView)) {
+        return (
+          <AccessDeniedView 
+            requiredRole="ROLE_STAFF hoặc ROLE_ADMIN"
+            featureName={`Phân hệ nội bộ: ${
+              currentView === 'credit' ? 'Đơn hàng & Thẩm định rủi ro Tín dụng' :
+              currentView === 'dunning' ? 'Bàn thu nợ đa tầng nội bộ' :
+              currentView === 'bank_recon' ? 'Đối soát Sổ phụ Ngân hàng' :
+              'Hàng chờ Maker-Checker Admin'
+            }`}
+            customMessage="Khách hàng B2B (User/Guest) không có quyền xem quy trình thẩm định tín dụng, đôn đốc nợ hoặc sổ phụ đối soát ngân hàng nội bộ. Bạn chỉ có quyền tự phục vụ trên phân hệ 'Hóa đơn & VietQR' và 'Cam kết PTP & Khiếu nại'."
+          />
+        );
+      }
+      if (['balances', 'customers', 'customer-detail', 'reports', 'users', 'connected'].includes(currentView)) {
+        return (
+          <AccessDeniedView 
+            requiredRole="ROLE_STAFF hoặc ROLE_ADMIN"
+            featureName={`Vận hành nội bộ: ${currentView}`}
+            customMessage="Khu vực này chứa dữ liệu tài chính nội bộ. Khách hàng B2B chỉ có quyền xem hóa đơn và lịch sử thanh toán của công ty mình."
+          />
+        );
+      }
+    }
+
+    // --- 2. RBAC GUARDS FOR STAFF (Non-Admin) ---
+    if (!isAdmin && currentView === 'users') {
+      return (
+        <AccessDeniedView 
+          requiredRole="ROLE_ADMIN"
+          featureName="Quản trị Người Dùng & Phân Quyền (RBAC)"
+          customMessage="Theo nguyên tắc kiểm soát nội bộ và phân tách nhiệm vụ (Segregation of Duties - SoD), chỉ Quản trị viên cấp cao (ROLE_ADMIN) mới có quyền tạo tài khoản và phân quyền hệ thống."
+        />
+      );
+    }
+
+    // --- 3. RENDER ALLOWED VIEWS ---
     switch (currentView) {
       case 'home':
-        return <HomePage />;
+        return <HomePage initialTab="overview" />;
+      case 'credit':
+        return <HomePage initialTab="credit" />;
+      case 'invoices':
+        return <HomePage initialTab="invoices" />;
+      case 'dunning':
+        return <HomePage initialTab="dunning" />;
+      case 'ptp_disputes':
+        return <HomePage initialTab="ptp_disputes" />;
+      case 'bank_recon':
+        return <HomePage initialTab="bank_recon" />;
+      case 'maker_checker':
+        return <HomePage initialTab="maker_checker" />;
       case 'payments':
         return <PaymentsPage />;
       case 'balances':
@@ -88,14 +191,41 @@ function DashboardContent() {
       case 'design-system':
         return <DesignSystemPage />;
       default:
-        return <HomePage />;
+        return <HomePage initialTab={isGuest ? 'invoices' : 'overview'} />;
     }
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#F8F9FA] text-[#0F172A]">
+    <div className="flex flex-col min-h-screen bg-[#F8FAFC] text-[#0F172A] font-sans antialiased">
       {/* Test Mode Alert Top Banner */}
       <TestModeBanner isTestMode={isTestMode} onToggle={toggleTestMode} />
+
+      {/* RBAC Visual Status Indicator Banner */}
+      <div className={`px-4 py-1.5 text-[11px] font-semibold flex items-center justify-between border-b transition-colors ${
+        isAdmin 
+          ? 'bg-blue-50/90 text-blue-900 border-blue-100' 
+          : isStaff 
+            ? 'bg-sky-50 text-sky-900 border-sky-100' 
+            : 'bg-emerald-50 text-emerald-900 border-emerald-100'
+      }`}>
+        <div className="flex items-center gap-2">
+          {isAdmin ? (
+            <Crown className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+          ) : isStaff ? (
+            <Stethoscope className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+          ) : (
+            <Lock className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+          )}
+          <span>
+            {isAdmin && 'ROLE_ADMIN (CFO) • Toàn quyền kiểm soát O2C & Phê duyệt Maker-Checker'}
+            {isStaff && !isAdmin && 'ROLE_STAFF (Nhân viên Kế toán) • Tác nghiệp Invoicing & Dunning; Bị chặn Quản trị Người Dùng (SoD)'}
+            {isGuest && 'ROLE_USER (Khách hàng B2B) • Chế độ Cổng Dịch Vụ; Chỉ xem Hóa đơn & Quét VietQR'}
+          </span>
+        </div>
+        <span className="hidden sm:inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-white border border-slate-200/60 shadow-2xs">
+          {isAdmin ? 'Full Authorization' : isStaff ? 'Maker Authorization' : 'Guest Sandbox'}
+        </span>
+      </div>
 
       {/* Main Layout: Sidebar + Content */}
       <div className="flex flex-1 overflow-hidden h-[calc(100vh-theme(spacing.0))]">
@@ -127,26 +257,30 @@ function DashboardContent() {
         ) : (
           <form onSubmit={handleCreatePaymentSubmit} className="space-y-4 text-xs">
             <div>
-              <label className="block text-slate-700 font-medium mb-1">Charge Amount (USD) *</label>
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                Amount (USD)
+              </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-semibold">$</span>
+                <span className="absolute left-3 top-2 text-slate-400 font-semibold">$</span>
                 <input
                   type="number"
                   step="0.01"
                   required
                   value={payAmount}
                   onChange={(e) => setPayAmount(e.target.value)}
-                  className="w-full pl-7 pr-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-[#635BFF] text-sm font-semibold"
+                  className="w-full pl-7 pr-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-[#635BFF] focus:ring-1 focus:ring-[#635BFF]"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-slate-700 font-medium mb-1">Khách nợ / Doanh nghiệp thanh toán *</label>
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                Customer
+              </label>
               <select
                 value={payCustomer}
                 onChange={(e) => setPayCustomer(e.target.value)}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-[#635BFF] bg-white"
+                className="w-full px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-[#635BFF] focus:ring-1 focus:ring-[#635BFF] bg-white"
               >
                 {customers.map((c) => (
                   <option key={c.id} value={c.name}>{c.name} ({c.email})</option>
@@ -155,84 +289,34 @@ function DashboardContent() {
             </div>
 
             <div>
-              <label className="block text-slate-700 font-medium mb-1">Nội dung nợ / Khoản thanh toán</label>
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                Description / Memo
+              </label>
               <input
                 type="text"
                 value={payDesc}
                 onChange={(e) => setPayDesc(e.target.value)}
-                placeholder="Ví dụ: Thanh toán đợt 2 - Hợp đồng nợ số HD-2026/08"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-[#635BFF]"
+                className="w-full px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-[#635BFF] focus:ring-1 focus:ring-[#635BFF]"
               />
             </div>
 
-            <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
-              <p className="text-[11px] text-slate-500">Hình thức thanh toán</p>
-              <p className="font-semibold text-slate-800 text-xs mt-0.5">Chuyển khoản Ngân hàng / Thẻ ủy quyền</p>
-            </div>
-
-            <div className="pt-2 flex justify-end gap-2">
+            <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-100">
               <button
                 type="button"
                 onClick={() => setActiveModal(null)}
-                className="px-3 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition"
+                className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg transition"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-1.5 bg-[#635BFF] hover:bg-[#5851EA] text-white font-semibold rounded-lg shadow-xs transition"
+                className="px-4 py-1.5 text-xs font-semibold text-white bg-[#635BFF] hover:bg-[#5851EA] rounded-lg transition shadow-xs"
               >
-                Submit Charge
+                Charge Payment
               </button>
             </div>
           </form>
         )}
-      </Modal>
-
-      {/* Global Modal: Export */}
-      <Modal
-        isOpen={activeModal === 'export'}
-        onClose={() => setActiveModal(null)}
-        title="Export Financial Dataset"
-        maxWidth="max-w-md"
-      >
-        <div className="space-y-4 text-xs">
-          <p className="text-slate-600">
-            Select your preferred export format for general ledger reporting directly from the Backend server:
-          </p>
-          <div className="space-y-2">
-            <button 
-              onClick={() => { exportData('csv'); setActiveModal(null); }}
-              className="w-full p-3 border border-slate-200 rounded-lg text-left hover:border-[#635BFF] hover:bg-indigo-50/20 transition flex items-center justify-between"
-            >
-              <div>
-                <p className="font-semibold text-slate-900">Comma-Separated Values (.csv)</p>
-                <p className="text-[11px] text-slate-400">Direct streaming from /api/transactions/export/csv</p>
-              </div>
-              <span className="text-[#635BFF] font-semibold text-xs">Download</span>
-            </button>
-
-            <button 
-              onClick={() => { exportData('json'); setActiveModal(null); }}
-              className="w-full p-3 border border-slate-200 rounded-lg text-left hover:border-[#635BFF] hover:bg-indigo-50/20 transition flex items-center justify-between"
-            >
-              <div>
-                <p className="font-semibold text-slate-900">JavaScript Object Notation (.json)</p>
-                <p className="text-[11px] text-slate-400">Structured data with full metadata from /api/transactions/export/json</p>
-              </div>
-              <span className="text-[#635BFF] font-semibold text-xs">Download</span>
-            </button>
-          </div>
-
-          <div className="pt-2 flex justify-end">
-            <button
-              onClick={() => setActiveModal(null)}
-              className="px-4 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition"
-            >
-              Close
-            </button>
-          </div>
-        </div>
       </Modal>
     </div>
   );
@@ -240,8 +324,10 @@ function DashboardContent() {
 
 export default function App() {
   return (
-    <DashboardProvider>
-      <DashboardContent />
-    </DashboardProvider>
+    <ErrorBoundary>
+      <DashboardProvider>
+        <DashboardContent />
+      </DashboardProvider>
+    </ErrorBoundary>
   );
 }
