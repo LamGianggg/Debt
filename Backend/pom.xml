@@ -142,6 +142,10 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.12</version>
+                <configuration>
+                    <destFile>C:/Users/Administrator/AppData/Local/Temp/jacoco.exec</destFile>
+                    <dataFile>C:/Users/Administrator/AppData/Local/Temp/jacoco.exec</dataFile>
+                </configuration>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
