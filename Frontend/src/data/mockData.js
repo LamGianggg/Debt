@@ -1,5 +1,5 @@
 // =========================================================================
-// MOCK DATA CHUẨN NGHIỆP VỤ FINTECH ORDER-TO-CASH & AR AUTOMATION
+// MOCK DATA CHUẨN NGHIỆP VỤ FINTECH ORDER-TO-CASH & AR AUTOMATION (B2B DEBT)
 // Theo tài liệu b_o_c_o_ph_n_t_ch_t_i_u_nghi_p_v_o2c_ar.md & Buss.md
 // =========================================================================
 
@@ -10,7 +10,7 @@ export const initialDashboardStats = {
   exposureRate: 81.6,
   dso: 34.2, // Days Sales Outstanding (Kỳ thu tiền bình quân)
   dsoTarget: 40.0,
-  dsoBenchmark: 45.0, // Chuẩn ngành Dược & TBYT
+  dsoBenchmark: 45.0, // Chuẩn ngành B2B Phân phối & Bán buôn
   stpRate: 94.8, // Tỷ lệ đối soát tự động qua Virtual Account + VietQR
   stpTarget: 90.0,
   badDebt: '42.000.000 đ', // Nợ xấu quá hạn > 30 ngày (T+30)
@@ -28,7 +28,7 @@ export const initialDashboardStats = {
 export const initialSalesOrders = [
   {
     id: 'SO-2026-108',
-    customer: 'Bệnh Viện Phụ Sản Quốc Tế',
+    customer: 'Công ty TNHH Cơ Khí & Thiết Bị Hoàng Phát',
     customerId: 'CUST-001',
     amount: '85.000.000 đ',
     rawAmount: 85000000,
@@ -43,7 +43,7 @@ export const initialSalesOrders = [
   },
   {
     id: 'SO-2026-109',
-    customer: 'Công ty Cổ phần Dược Phẩm An Khang',
+    customer: 'Công ty CP Vật Liệu Xây Dựng An Khang',
     customerId: 'CUST-002',
     amount: '240.000.000 đ',
     rawAmount: 240000000,
@@ -58,7 +58,7 @@ export const initialSalesOrders = [
   },
   {
     id: 'SO-2026-110',
-    customer: 'Tập Đoàn Y Tế Hoàn Mỹ',
+    customer: 'Tập Đoàn Đầu Tư & Xây Dựng An Bình',
     customerId: 'CUST-003',
     amount: '120.000.000 đ',
     rawAmount: 120000000,
@@ -73,7 +73,7 @@ export const initialSalesOrders = [
   },
   {
     id: 'SO-2026-111',
-    customer: 'Trung Tâm Y Tế Quận 1',
+    customer: 'Công ty CP Công Nghệ & Giải Pháp Nam Việt',
     customerId: 'CUST-004',
     amount: '45.000.000 đ',
     rawAmount: 45000000,
@@ -93,9 +93,9 @@ export const initialSalesOrders = [
 export const initialInvoices = [
   {
     id: 'INV-2026-0891',
-    customer: 'Bệnh Viện Phụ Sản Quốc Tế',
+    customer: 'Công ty TNHH Cơ Khí & Thiết Bị Hoàng Phát',
     customerId: 'CUST-001',
-    taxCode: '0314892109',
+    taxCode: '0108921099',
     vaNumber: '9688600129',
     vaBank: 'VietinBank',
     amount: '85.000.000 đ',
@@ -111,7 +111,7 @@ export const initialInvoices = [
   },
   {
     id: 'INV-2026-0884',
-    customer: 'Nha Khoa Minh Tâm',
+    customer: 'Công ty TNHH Thiết Bị Điện & Tự Động Hóa Minh Tâm',
     customerId: 'CUST-005',
     taxCode: '0315998822',
     vaNumber: '9688600131',
@@ -129,7 +129,7 @@ export const initialInvoices = [
   },
   {
     id: 'INV-2026-0870',
-    customer: 'Công ty TBYT Phương Nam',
+    customer: 'Công ty CP Sản Xuất & XNK Đại Nam',
     customerId: 'CUST-006',
     taxCode: '0312345678',
     vaNumber: '9688600133',
@@ -147,7 +147,7 @@ export const initialInvoices = [
   },
   {
     id: 'INV-2026-0855',
-    customer: 'Công ty Cổ phần Dược Phẩm An Khang',
+    customer: 'Công ty CP Vật Liệu Xây Dựng An Khang',
     customerId: 'CUST-002',
     taxCode: '0318991122',
     vaNumber: '9688600130',
@@ -165,7 +165,7 @@ export const initialInvoices = [
   },
   {
     id: 'INV-2026-0820',
-    customer: 'Phòng Khám Y Khoa Phước Long',
+    customer: 'Doanh Nghiệp Tư Nhân Chế Biến & Thương Mại Minh Phát',
     customerId: 'CUST-007',
     taxCode: '0317765544',
     vaNumber: '9688600135',
@@ -180,6 +180,42 @@ export const initialInvoices = [
     exception_status: 'LEGAL_PENDING',
     dunningTier: 'Tầng 4 (Quá hạn 35d: Trình Admin ký khởi kiện pháp lý)',
     qrPayload: 'https://img.vietqr.io/image/970415-9688600135-compact2.png?amount=42000000&addInfo=9688600135%20INV-2026-0820'
+  },
+  {
+    id: 'INV-2026-0810',
+    customer: 'Tập Đoàn Đầu Tư & Xây Dựng An Bình',
+    customerId: 'CUST-003',
+    taxCode: '0314567890',
+    vaNumber: '9688600132',
+    vaBank: 'VietinBank',
+    amount: '15.000.000 đ',
+    rawAmount: 15000000,
+    issuedDate: '01/10/2026',
+    dueDate: '20/10/2026',
+    doc_status: 'PAID',
+    payment_status: 'PAID',
+    aging_stage: 'PAID (0d)',
+    exception_status: 'NORMAL',
+    dunningTier: 'Đã hoàn tất thanh toán',
+    qrPayload: 'https://img.vietqr.io/image/970415-9688600132-compact2.png?amount=15000000&addInfo=9688600132%20INV-2026-0810'
+  },
+  {
+    id: 'INV-2026-0795',
+    customer: 'Công ty CP Đầu Tư Phát Triển Công Nghệ Sao Mai',
+    customerId: 'CUST-004',
+    taxCode: '0107889900',
+    vaNumber: '9688600134',
+    vaBank: 'BIDV',
+    amount: '68.000.000 đ',
+    rawAmount: 68000000,
+    issuedDate: '15/08/2026',
+    dueDate: '15/09/2026',
+    doc_status: 'PAID',
+    payment_status: 'PAID',
+    aging_stage: 'PAID (0d)',
+    exception_status: 'NORMAL',
+    dunningTier: 'Đã hoàn tất thanh toán',
+    qrPayload: 'https://img.vietqr.io/image/970418-9688600134-compact2.png?amount=68000000&addInfo=9688600134%20INV-2026-0795'
   }
 ];
 
@@ -188,12 +224,16 @@ export const initialTransactions = [
   {
     id: 'TXN-98821',
     time: '10/11/2026, 14:28:10',
+    date: '10/11/2026',
     amount: '85.000.000 đ',
     rawAmount: 85000000,
     bank: 'VietinBank',
     vaNumber: '9688600129',
-    customer: 'Bệnh Viện Phụ Sản Quốc Tế',
-    memo: '9688600129 INV-2026-0891 TT TIEN THUOC DOT 1',
+    customer: 'Công ty TNHH Cơ Khí & Thiết Bị Hoàng Phát',
+    customerEmail: 'hoangphat.ck@gmail.com',
+    memo: '9688600129 INV-2026-0891 TT TIEN HANG MAY MOC DOT 1',
+    description: 'Thanh toán đơn hàng máy móc HĐ #INV-2026-0891',
+    method: 'VietinBank VA • 9688600129',
     reconcileResult: 'Khớp 100% đích danh INV-2026-0891 (Tất toán xong)',
     status: 'MATCHED_STP',
     statusType: 'success',
@@ -202,12 +242,16 @@ export const initialTransactions = [
   {
     id: 'TXN-98822',
     time: '10/11/2026, 11:15:02',
+    date: '10/11/2026',
     amount: '50.000.000 đ',
     rawAmount: 50000000,
     bank: 'BIDV',
     vaNumber: '9688600130',
-    customer: 'Công ty CP Dược Phẩm An Khang',
-    memo: 'An Khang chuyen khoan',
+    customer: 'Công ty CP Vật Liệu Xây Dựng An Khang',
+    customerEmail: 'ankhang.vlxd@ankhang.com.vn',
+    memo: 'An Khang chuyen khoan vat tu',
+    description: 'Chuyển khoản vật tư công trình (Thiếu mã HĐ)',
+    method: 'BIDV VA • 9688600130',
     reconcileResult: 'Thiếu mã HĐ -> Giữ vào Đệm an toàn 24h (UNAPPLIED_CASH_HOLD)',
     status: 'HOLD_BUFFER_24H',
     statusType: 'warning',
@@ -216,12 +260,16 @@ export const initialTransactions = [
   {
     id: 'TXN-98823',
     time: '10/11/2026, 09:04:45',
+    date: '10/11/2026',
     amount: '32.000.000 đ',
     rawAmount: 32000000,
     bank: 'VietinBank',
     vaNumber: '9688600131',
-    customer: 'Nha Khoa Minh Tâm',
-    memo: 'Minh Tam tra tien vat tu',
+    customer: 'Công ty TNHH Thiết Bị Điện & Tự Động Hóa Minh Tâm',
+    customerEmail: 'minhtam.electric@gmail.com',
+    memo: 'Minh Tam tra tien vat tu thiet bi',
+    description: 'Tất toán số dư vật tư HĐ #INV-2026-0884',
+    method: 'VietinBank VA • 9688600131',
     reconcileResult: 'Khớp đúng tổ hợp số dư hóa đơn INV-2026-0884',
     status: 'AUTO_COMBINATION',
     statusType: 'info',
@@ -230,12 +278,16 @@ export const initialTransactions = [
   {
     id: 'TXN-98824',
     time: '09/11/2026, 16:40:15',
+    date: '09/11/2026',
     amount: '14.960.000 đ',
     rawAmount: 14960000,
     bank: 'VietinBank',
     vaNumber: '9688600132',
-    customer: 'Phòng Khám Đa Khoa An Bình',
+    customer: 'Tập Đoàn Đầu Tư & Xây Dựng An Bình',
+    customerEmail: 'anbinh.corp@gmail.com',
     memo: 'An Binh thanh toan INV-0880',
+    description: 'Thanh toán HĐ #INV-0880 (Khớp De Minimis)',
+    method: 'VietinBank VA • 9688600132',
     reconcileResult: 'Lệch thiếu 40.000 đ (< Ngưỡng De Minimis 50.000 đ)',
     status: 'AUTO_WRITE_OFF',
     statusType: 'success',
@@ -247,7 +299,7 @@ export const initialTransactions = [
 export const initialDunningWorklist = [
   {
     priority: '🔴 CAO NHẤT',
-    customer: 'Phòng Khám Y Khoa Phước Long',
+    customer: 'Doanh Nghiệp Tư Nhân Chế Biến & Thương Mại Minh Phát',
     contact: 'Kế toán trưởng: 0903.112.445 (Giờ HC)',
     overdueAmount: '42.000.000 đ',
     tier: 'Tầng 4 (Quá hạn 35 ngày)',
@@ -256,7 +308,7 @@ export const initialDunningWorklist = [
   },
   {
     priority: '🟠 CAO',
-    customer: 'Công ty Cổ phần Dược Phẩm An Khang',
+    customer: 'Công ty CP Vật Liệu Xây Dựng An Khang',
     contact: 'Phòng Mua hàng: 0918.455.789 (Anh Tuấn)',
     overdueAmount: '180.000.000 đ',
     tier: 'Tầng 2 (Quá hạn 9 ngày)',
@@ -265,7 +317,7 @@ export const initialDunningWorklist = [
   },
   {
     priority: '🟡 TRUNG BÌNH',
-    customer: 'Bệnh Viện Sài Gòn',
+    customer: 'Tập Đoàn Đầu Tư & Xây Dựng An Bình',
     contact: 'Phòng Tài chính: 028.3822.9011 (Ms. Lan)',
     overdueAmount: '95.000.000 đ',
     tier: 'Tầng 2 (Quá hạn 7 ngày)',
@@ -274,8 +326,8 @@ export const initialDunningWorklist = [
   },
   {
     priority: '🟢 BÌNH THƯỜNG',
-    customer: 'Nha Khoa Minh Tâm',
-    contact: 'Chủ phòng khám: 0908.223.344 (Bác sĩ Tâm)',
+    customer: 'Công ty TNHH Thiết Bị Điện & Tự Động Hóa Minh Tâm',
+    contact: 'Giám đốc: 0908.223.344 (Anh Tâm)',
     overdueAmount: '32.000.000 đ',
     tier: 'Tầng 1 (Quá hạn 3 ngày)',
     history: 'Đã gửi tin Zalo ZNS nhắc nhở nhẹ nhàng kèm VietQR',
@@ -287,7 +339,7 @@ export const initialDunningWorklist = [
 export const initialPTPList = [
   {
     id: 'PTP-2026-018',
-    customer: 'Phòng Khám Y Khoa Hòa Hảo',
+    customer: 'Công ty CP Công Nghệ & Giải Pháp Nam Việt',
     invoiceId: 'INV-2026-0890',
     amount: '45.000.000 đ',
     promiseDate: '15/11/2026',
@@ -299,7 +351,7 @@ export const initialPTPList = [
   },
   {
     id: 'PTP-2026-019',
-    customer: 'Bệnh Viện Sài Gòn',
+    customer: 'Tập Đoàn Đầu Tư & Xây Dựng An Bình',
     invoiceId: 'INV-2026-0888',
     amount: '95.000.000 đ',
     promiseDate: '18/11/2026',
@@ -311,7 +363,7 @@ export const initialPTPList = [
   },
   {
     id: 'PTP-2026-020',
-    customer: 'Công ty CP Dược Phẩm An Khang',
+    customer: 'Công ty CP Vật Liệu Xây Dựng An Khang',
     invoiceId: 'INV-2026-0875',
     amount: '180.000.000 đ',
     promiseDate: '10/11/2026',
@@ -327,9 +379,9 @@ export const initialPTPList = [
 export const initialDisputesList = [
   {
     id: 'DSP-092',
-    customer: 'Công ty TBYT Phương Nam',
+    customer: 'Công ty CP Sản Xuất & XNK Đại Nam',
     invoiceId: 'INV-2026-0870 (120M đ)',
-    issue: 'Giao thiếu 5 kiện găng tay y tế (Giá trị tranh chấp 15M đ)',
+    issue: 'Giao thiếu 5 kiện linh kiện máy nén khí (Giá trị tranh chấp 15M đ)',
     action: 'Đã tách nợ: Đã thu phần hợp lệ 105M đ thành công',
     department: 'Kho vận & Giao nhận',
     slaRemaining: 'SLA còn 14 giờ (Kho đang kiểm tra)',
@@ -338,9 +390,9 @@ export const initialDisputesList = [
   },
   {
     id: 'DSP-093',
-    customer: 'Nha Khoa Tâm Đức',
+    customer: 'Công ty TNHH Thiết Bị Điện & Tự Động Hóa Minh Tâm',
     invoiceId: 'INV-2026-0885 (35M đ)',
-    issue: 'Sai tỷ lệ chiết khấu hợp đồng 5% (Chênh lệch 1.750.000 đ)',
+    issue: 'Sai tỷ lệ chiết khấu thương mại hợp đồng 5% (Chênh lệch 1.750.000 đ)',
     action: 'Chờ Sales xác nhận phụ lục hợp đồng thương mại',
     department: 'Phòng Kinh doanh',
     slaRemaining: 'SLA còn 36 giờ (Sales xử lý)',
@@ -349,7 +401,7 @@ export const initialDisputesList = [
   },
   {
     id: 'DSP-094',
-    customer: 'Phòng Khám Đa Khoa An Bình',
+    customer: 'Tập Đoàn Đầu Tư & Xây Dựng An Bình',
     invoiceId: 'INV-2026-0862 (68M đ)',
     issue: 'Chưa nhận hóa đơn GTGT điện tử gốc qua email',
     action: 'Hệ thống đã tự động gửi lại E-Invoice có chữ ký số',
@@ -364,7 +416,7 @@ export const initialDisputesList = [
 export const initialMakerCheckerApprovals = [
   {
     id: 'REQ-2026-001',
-    customer: 'Tập Đoàn Y Tế Hoàn Mỹ',
+    customer: 'Tập Đoàn Đầu Tư & Xây Dựng An Bình',
     type: 'Override Mở khóa Đơn SO nợ quá hạn > 15d',
     amount: 'Giá trị đơn: 120.000.000 đ',
     maker: 'Trần Văn Mạnh (Trưởng phòng Sales)',
@@ -373,7 +425,7 @@ export const initialMakerCheckerApprovals = [
   },
   {
     id: 'REQ-2026-002',
-    customer: 'Phòng Khám Y Khoa Phước Long',
+    customer: 'Doanh Nghiệp Tư Nhân Chế Biến & Thương Mại Minh Phát',
     type: 'Ký duyệt Hồ sơ Pháp lý Khởi kiện Nợ xấu (T+30)',
     amount: 'Tổng dư nợ: 42.000.000 đ',
     maker: 'Lê Thu Hà (Kế toán AR)',
@@ -382,11 +434,11 @@ export const initialMakerCheckerApprovals = [
   },
   {
     id: 'REQ-2026-003',
-    customer: 'Công ty Cổ phần Dược Phẩm An Khang',
+    customer: 'Công ty CP Vật Liệu Xây Dựng An Khang',
     type: 'Gia hạn Cam kết thanh toán (PTP) lần 3',
     amount: 'Hóa đơn: 180.000.000 đ',
     maker: 'Lê Thu Hà (Kế toán AR)',
-    reason: 'Khách xuất trình chứng từ bệnh viện đối tác chậm thanh toán giải ngân',
+    reason: 'Khách xuất trình chứng từ đối tác nhà thầu chậm thanh toán giải ngân',
     status: 'PENDING'
   }
 ];
@@ -395,8 +447,12 @@ export const initialMakerCheckerApprovals = [
 export const initialCustomers = [
   {
     id: 'CUST-001',
-    name: 'Bệnh Viện Phụ Sản Quốc Tế',
-    taxCode: '0314892109',
+    name: 'Công ty TNHH Cơ Khí & Thiết Bị Hoàng Phát',
+    taxCode: '0108921099',
+    email: 'ap.hoangphat@vietinbank.vn',
+    totalSpent: '345.000.000 đ',
+    paymentsCount: 8,
+    created: '15/08/2026',
     creditTier: 'Hạng A (Tín nhiệm cao)',
     creditLimit: '500.000.000 đ',
     unpaidBalance: '85.000.000 đ',
@@ -409,8 +465,12 @@ export const initialCustomers = [
   },
   {
     id: 'CUST-002',
-    name: 'Công ty Cổ phần Dược Phẩm An Khang',
+    name: 'Công ty CP Vật Liệu Xây Dựng An Khang',
     taxCode: '0318991122',
+    email: 'ketoan@ankhangcorp.vn',
+    totalSpent: '580.000.000 đ',
+    paymentsCount: 14,
+    created: '02/05/2026',
     creditTier: 'Hạng B (Theo dõi chặt)',
     creditLimit: '400.000.000 đ',
     unpaidBalance: '180.000.000 đ',
@@ -423,8 +483,12 @@ export const initialCustomers = [
   },
   {
     id: 'CUST-003',
-    name: 'Tập Đoàn Y Tế Hoàn Mỹ',
+    name: 'Tập Đoàn Đầu Tư & Xây Dựng An Bình',
     taxCode: '0309988776',
+    email: 'finance@anbinhgroup.vn',
+    totalSpent: '1.240.000.000 đ',
+    paymentsCount: 22,
+    created: '12/01/2026',
     creditTier: 'Hạng A (Đối tác chiến lược)',
     creditLimit: '1.000.000.000 đ',
     unpaidBalance: '380.000.000 đ',
@@ -437,28 +501,79 @@ export const initialCustomers = [
   }
 ];
 
-
 // 10. DỮ LIỆU ĐỐI SOÁT & KẾT NỐI HỆ THỐNG PHỤ TRỢ (COMPATIBILITY)
 export const initialPayouts = [
   {
-    id: 'po_AUTO_RECON_01',
+    id: 'EXP-2026-001',
     amount: '85.000.000 đ',
     rawAmount: 85000000,
     status: 'Paid',
     statusType: 'success',
-    arrivalDate: '10/11/2026',
-    destination: 'VietinBank Virtual Account (9688600129)',
-    description: 'Quyết toán đối soát STP tự động HĐ #INV-2026-0891'
+    initiated: '10/11/2026 09:30',
+    arrivalDate: '10/11/2026 09:32',
+    destination: 'VietinBank VA • 9688600129',
+    description: 'Quyết toán đối soát STP tự động HĐ #INV-2026-0891 (Hoàng Phát)',
+    type: 'Đối soát gạch nợ'
   },
   {
-    id: 'po_AUTO_RECON_02',
+    id: 'EXP-2026-002',
     amount: '32.000.000 đ',
     rawAmount: 32000000,
     status: 'Paid',
     statusType: 'success',
-    arrivalDate: '10/11/2026',
-    destination: 'VietinBank Virtual Account (9688600131)',
-    description: 'Gạch nợ tổ hợp số dư HĐ #INV-2026-0884'
+    initiated: '10/11/2026 14:15',
+    arrivalDate: '10/11/2026 14:20',
+    destination: 'VietinBank VA • 9688600131',
+    description: 'Gạch nợ tổ hợp số dư HĐ #INV-2026-0884 (Minh Tâm)',
+    type: 'Đối soát gạch nợ'
+  },
+  {
+    id: 'EXP-2026-003',
+    amount: '3.500.000 đ',
+    rawAmount: 3500000,
+    status: 'Paid',
+    statusType: 'success',
+    initiated: '09/11/2026 10:00',
+    arrivalDate: '09/11/2026 10:05',
+    destination: 'VietinBank Head Office (113366668888)',
+    description: 'Chi phí duy trì cổng API Webhook & Tài khoản ảo tháng 11/2026',
+    type: 'Phí dịch vụ ngân hàng'
+  },
+  {
+    id: 'EXP-2026-004',
+    amount: '150.000.000 đ',
+    rawAmount: 150000000,
+    status: 'In Transit',
+    statusType: 'warning',
+    initiated: '11/11/2026 08:30',
+    arrivalDate: 'Dự kiến 12/11/2026',
+    destination: 'BIDV Chi nhánh Hà Nội • 120100008899',
+    description: 'Giải ngân hạn mức tài trợ chuỗi cung ứng (SCF) - Hoàng Phát',
+    type: 'Giải ngân chuỗi cung ứng'
+  },
+  {
+    id: 'EXP-2026-005',
+    amount: '450.000 đ',
+    rawAmount: 450000,
+    status: 'Paid',
+    statusType: 'success',
+    initiated: '08/11/2026 15:45',
+    arrivalDate: '08/11/2026 16:00',
+    destination: 'VNPost Express (Tài khoản thu hộ)',
+    description: 'Chi phí bưu chính phát chuyển thư thông báo khởi kiện nợ Minh Phát',
+    type: 'Chi phí đôn đốc pháp lý'
+  },
+  {
+    id: 'EXP-2026-006',
+    amount: '1.200.000 đ',
+    rawAmount: 1200000,
+    status: 'Pending',
+    statusType: 'pending',
+    initiated: '11/11/2026 16:20',
+    arrivalDate: 'Chờ Maker-Checker phê duyệt',
+    destination: 'VietinBank VA • 9688600133 (Đại Nam)',
+    description: 'Hoàn trả khoản nộp thừa tiền hàng HĐ #INV-2026-0870',
+    type: 'Hoàn trả khách hàng'
   }
 ];
 
@@ -493,7 +608,7 @@ export const initialProducts = [
   {
     id: 'prod_O2C_01',
     name: 'Gói Hạn mức Tín dụng B2B Xoay vòng (Revolving Credit)',
-    description: 'Cấp hạn mức công nợ mua thuốc & vật tư y tế 30 ngày, miễn lãi nếu thanh toán trong hạn.',
+    description: 'Cấp hạn mức công nợ mua hàng hóa, vật tư và thiết bị B2B 30 ngày, miễn lãi nếu thanh toán trong hạn.',
     price: 'Hạn mức đến 1.000.000.000 đ',
     billing: 'Kỳ hạn 30 ngày',
     activeSubscribers: 18,

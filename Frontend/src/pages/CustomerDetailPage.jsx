@@ -19,6 +19,17 @@ import { useDashboard } from '../context/DashboardContext';
 import StatusBadge from '../components/common/StatusBadge';
 import { VisaLogo } from '../components/icons/Icons';
 
+function getCustomerInitials(name) {
+  if (!name) return 'KH';
+  const clean = name.replace(/^(Công ty TNHH|Công ty CP|Tập Đoàn|Doanh Nghiệp|Chi Nhánh)\s+/i, '').trim();
+  const target = clean || name;
+  const words = target.split(/\s+/).filter(Boolean);
+  if (words.length >= 2) {
+    return (words[0][0] + words[1][0]).toUpperCase();
+  }
+  return target.substring(0, 2).toUpperCase();
+}
+
 export default function CustomerDetailPage() {
   const { 
     selectedCustomer, 
@@ -74,8 +85,8 @@ export default function CustomerDetailPage() {
       {/* Main Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-indigo-100 text-[#635BFF] flex items-center justify-center font-bold text-base border border-indigo-200">
-            {customer.name.split(' ').map(n => n[0]).join('')}
+          <div className="w-12 h-12 rounded-full bg-indigo-50 border border-indigo-200/80 text-indigo-700 flex items-center justify-center font-bold text-base shrink-0 overflow-hidden select-none">
+            {getCustomerInitials(customer.name)}
           </div>
           <div>
             <div className="flex items-center gap-2">

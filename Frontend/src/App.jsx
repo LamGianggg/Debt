@@ -9,6 +9,11 @@ import { Crown, Stethoscope, User, ShieldAlert, Lock } from 'lucide-react';
 
 // Pages
 import HomePage from './pages/HomePage';
+import InvoicesPage from './pages/InvoicesPage';
+import CreditPage from './pages/CreditPage';
+import DunningPage from './pages/DunningPage';
+import MakerCheckerPage from './pages/MakerCheckerPage';
+import PtpDisputesPage from './pages/PtpDisputesPage';
 import PaymentsPage from './pages/PaymentsPage';
 import BalancesPage from './pages/BalancesPage';
 import CustomersPage from './pages/CustomersPage';
@@ -76,7 +81,8 @@ function DashboardContent() {
     customers,
     currentUser,
     isAdmin,
-    isStaff
+    isStaff,
+    t
   } = useDashboard();
 
   // Create payment modal state
@@ -120,21 +126,21 @@ function DashboardContent() {
   const renderActivePage = () => {
     // --- 1. RBAC GUARDS FOR GUEST / ROLE_USER ---
     if (isGuest) {
-      if (['credit', 'dunning', 'bank_recon', 'maker_checker'].includes(currentView)) {
+      if (['credit', 'dunning', 'expenses', 'balances', 'bank_recon', 'maker_checker'].includes(currentView)) {
         return (
           <AccessDeniedView 
             requiredRole="ROLE_STAFF hoặc ROLE_ADMIN"
             featureName={`Phân hệ nội bộ: ${
               currentView === 'credit' ? 'Đơn hàng & Thẩm định rủi ro Tín dụng' :
               currentView === 'dunning' ? 'Bàn thu nợ đa tầng nội bộ' :
-              currentView === 'bank_recon' ? 'Đối soát Sổ phụ Ngân hàng' :
+              currentView === 'expenses' || currentView === 'balances' ? 'Chi phí & Quản lý Sổ quỹ' :
               'Hàng chờ Maker-Checker Admin'
             }`}
-            customMessage="Khách hàng B2B (User/Guest) không có quyền xem quy trình thẩm định tín dụng, đôn đốc nợ hoặc sổ phụ đối soát ngân hàng nội bộ. Bạn chỉ có quyền tự phục vụ trên phân hệ 'Hóa đơn & VietQR' và 'Cam kết PTP & Khiếu nại'."
+            customMessage="Khách hàng B2B (User/Guest) không có quyền xem quy trình thẩm định tín dụng, đôn đốc nợ hoặc chi phí & sổ quỹ giải ngân nội bộ. Bạn chỉ có quyền tự phục vụ trên phân hệ 'Hóa đơn & VietQR' và 'Cam kết PTP & Khiếu nại'."
           />
         );
       }
-      if (['balances', 'customers', 'customer-detail', 'reports', 'users', 'connected'].includes(currentView)) {
+      if (['customers', 'customer-detail', 'reports', 'users', 'connected'].includes(currentView)) {
         return (
           <AccessDeniedView 
             requiredRole="ROLE_STAFF hoặc ROLE_ADMIN"
@@ -159,22 +165,22 @@ function DashboardContent() {
     // --- 3. RENDER ALLOWED VIEWS ---
     switch (currentView) {
       case 'home':
-        return <HomePage initialTab="overview" />;
-      case 'credit':
-        return <HomePage initialTab="credit" />;
+        return <HomePage />;
       case 'invoices':
-        return <HomePage initialTab="invoices" />;
+        return <InvoicesPage />;
+      case 'credit':
+        return <CreditPage />;
       case 'dunning':
-        return <HomePage initialTab="dunning" />;
+        return <DunningPage />;
       case 'ptp_disputes':
-        return <HomePage initialTab="ptp_disputes" />;
-      case 'bank_recon':
-        return <HomePage initialTab="bank_recon" />;
+        return <PtpDisputesPage />;
       case 'maker_checker':
-        return <HomePage initialTab="maker_checker" />;
+        return <MakerCheckerPage />;
       case 'payments':
         return <PaymentsPage />;
+      case 'expenses':
       case 'balances':
+      case 'bank_recon':
         return <BalancesPage />;
       case 'customers':
         return <CustomersPage />;
@@ -191,7 +197,7 @@ function DashboardContent() {
       case 'design-system':
         return <DesignSystemPage />;
       default:
-        return <HomePage initialTab={isGuest ? 'invoices' : 'overview'} />;
+        return isGuest ? <InvoicesPage /> : <HomePage />;
     }
   };
 
@@ -217,13 +223,13 @@ function DashboardContent() {
             <Lock className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
           )}
           <span>
-            {isAdmin && 'ROLE_ADMIN (CFO) • Toàn quyền kiểm soát O2C & Phê duyệt Maker-Checker'}
-            {isStaff && !isAdmin && 'ROLE_STAFF (Nhân viên Kế toán) • Tác nghiệp Invoicing & Dunning; Bị chặn Quản trị Người Dùng (SoD)'}
-            {isGuest && 'ROLE_USER (Khách hàng B2B) • Chế độ Cổng Dịch Vụ; Chỉ xem Hóa đơn & Quét VietQR'}
+            {isAdmin && t('adminRole')}
+            {isStaff && !isAdmin && t('staffRole')}
+            {isGuest && t('guestRole')}
           </span>
         </div>
         <span className="hidden sm:inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-white border border-slate-200/60 shadow-2xs">
-          {isAdmin ? 'Full Authorization' : isStaff ? 'Maker Authorization' : 'Guest Sandbox'}
+          {isAdmin ? t('fullAuth') : isStaff ? t('makerAuth') : t('guestSandbox')}
         </span>
       </div>
 

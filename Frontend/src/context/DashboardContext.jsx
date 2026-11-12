@@ -13,6 +13,7 @@ import {
   initialDisputesList,
   initialMakerCheckerApprovals
 } from '../data/mockData';
+import { translations } from '../data/translations';
 import { api } from '../services/api';
 
 const DashboardContext = createContext();
@@ -23,6 +24,26 @@ export function DashboardProvider({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [globalSearch, setGlobalSearch] = useState('');
   const [timeframe, setTimeframe] = useState('30d');
+  
+  // Language & i18n
+  const [language, setLanguageState] = useState(() => {
+    return localStorage.getItem('fortinvo_lang') || 'vi';
+  });
+
+  const setLanguage = (lang) => {
+    setLanguageState(lang);
+    localStorage.setItem('fortinvo_lang', lang);
+  };
+
+  const toggleLanguage = () => {
+    const next = language === 'vi' ? 'en' : 'vi';
+    setLanguage(next);
+  };
+
+  const t = (key, fallback = '') => {
+    const langDict = translations[language] || translations.vi || {};
+    return langDict[key] || translations.en?.[key] || fallback || key;
+  };
   
   // Connection and loading state
   const [isBackendConnected, setIsBackendConnected] = useState(false);
@@ -489,6 +510,10 @@ export function DashboardProvider({ children }) {
 
   return (
     <DashboardContext.Provider value={{
+      language,
+      setLanguage,
+      toggleLanguage,
+      t,
       currentView,
       switchView,
       isTestMode,

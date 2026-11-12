@@ -6,7 +6,7 @@ import {
   CheckCircle2, 
   XCircle, 
   Crown, 
-  Stethoscope, 
+  Briefcase, 
   User, 
   Search,
   Lock,
@@ -200,7 +200,7 @@ export default function UsersPage() {
             <li>Quản lý danh sách người dùng và gán vai trò</li>
             <li>Duyệt & giải ngân tiền Payout về ngân hàng</li>
             <li>Thực hiện hoàn tiền (Refund charge)</li>
-            <li>Liên kết phòng khám & xuất báo cáo CSV/JSON</li>
+            <li>Liên kết tài khoản đối soát & xuất báo cáo công nợ CSV/JSON</li>
           </ul>
         </div>
 
@@ -208,17 +208,17 @@ export default function UsersPage() {
         <div className="bg-white p-4 rounded-xl border border-sky-100 shadow-xs space-y-2">
           <div className="flex items-center justify-between">
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold bg-sky-50 text-sky-700 border border-sky-200">
-              <Stethoscope className="w-3.5 h-3.5" />
+              <Briefcase className="w-3.5 h-3.5" />
               ROLE_STAFF
             </span>
-            <span className="text-[10px] text-slate-400 font-semibold">Bác sĩ / Kế toán</span>
+            <span className="text-[10px] text-slate-400 font-semibold">Kế toán / Thu hồi nợ</span>
           </div>
-          <p className="text-xs font-semibold text-slate-800">Nhân Viên Y Tế & Thu Ngân</p>
+          <p className="text-xs font-semibold text-slate-800">Nhân Viên Kế Toán & Thu Nợ (AR Staff)</p>
           <ul className="text-[11px] text-slate-500 space-y-1 list-disc list-inside">
-            <li>Tạo phiếu thu tiền & tính phí bệnh nhân</li>
-            <li>Quản lý hồ sơ bệnh nhân và gói khám</li>
-            <li>Xem danh mục sản phẩm & dịch vụ</li>
-            <li><span className="text-rose-500 font-medium">Bị chặn:</span> Không được giải ngân hay hoàn tiền</li>
+            <li>Lập phiếu thu nợ, theo dõi hóa đơn và đối soát</li>
+            <li>Quản lý hồ sơ công nợ khách hàng B2B, phát lệnh đôn đốc nợ</li>
+            <li>Ghi nhận cam kết thanh toán (PTP) và xử lý khiếu nại (Dispute)</li>
+            <li><span className="text-rose-500 font-medium">Bị chặn:</span> Không được giải ngân hay duyệt vượt hạn mức</li>
           </ul>
         </div>
 
@@ -229,12 +229,12 @@ export default function UsersPage() {
               <User className="w-3.5 h-3.5" />
               ROLE_USER
             </span>
-            <span className="text-[10px] text-slate-400 font-semibold">Bệnh nhân</span>
+            <span className="text-[10px] text-slate-400 font-semibold">Khách hàng B2B</span>
           </div>
-          <p className="text-xs font-semibold text-slate-800">Khách Hàng / Bệnh Nhân</p>
+          <p className="text-xs font-semibold text-slate-800">Doanh Nghiệp / Đối Tác Khách Hàng</p>
           <ul className="text-[11px] text-slate-500 space-y-1 list-disc list-inside">
-            <li>Xem thông tin hồ sơ và gói khám cá nhân</li>
-            <li>Xem lịch sử các biên lai thanh toán đã nạp</li>
+            <li>Tra cứu hạn mức tín dụng và hóa đơn điện tử</li>
+            <li>Thanh toán trực tuyến 1-chạm qua VietQR và tạo cam kết trả nợ</li>
             <li><span className="text-rose-500 font-medium">Bị chặn:</span> Toàn bộ thao tác quản trị nội bộ</li>
           </ul>
         </div>
@@ -400,8 +400,8 @@ export default function UsersPage() {
               className="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-[#635BFF] bg-white font-medium"
             >
               <option value="ROLE_ADMIN">ROLE_ADMIN - Quản trị viên (Toàn quyền)</option>
-              <option value="ROLE_STAFF">ROLE_STAFF - Nhân viên / Bác sĩ (Thu viện phí, quản lý bệnh nhân)</option>
-              <option value="ROLE_USER">ROLE_USER - Khách hàng / Bệnh nhân (Chỉ xem cá nhân)</option>
+              <option value="ROLE_STAFF">ROLE_STAFF - Nhân viên Kế toán & Thu nợ (Quản lý công nợ, đối soát)</option>
+              <option value="ROLE_USER">ROLE_USER - Khách hàng B2B (Tra cứu hóa đơn & thanh toán VietQR)</option>
             </select>
           </div>
 
@@ -460,10 +460,10 @@ export default function UsersPage() {
               >
                 <div>
                   <div className="flex items-center gap-1.5 font-bold text-slate-900">
-                    <Stethoscope className="w-4 h-4 text-sky-600" />
-                    <span>ROLE_STAFF (Nhân viên / Bác sĩ)</span>
+                    <Briefcase className="w-4 h-4 text-sky-600" />
+                    <span>ROLE_STAFF (Nhân viên Kế toán & Thu nợ)</span>
                   </div>
-                  <p className="text-[11px] text-slate-400 mt-0.5">Quyền thu tiền, quản lý bệnh nhân. Không được giải ngân.</p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">Quyền quản lý công nợ, đôn đốc nợ. Không được duyệt vượt hạn mức.</p>
                 </div>
                 <span className="text-sky-600 font-semibold text-xs">Gán quyền</span>
               </button>
@@ -476,9 +476,9 @@ export default function UsersPage() {
                 <div>
                   <div className="flex items-center gap-1.5 font-bold text-slate-900">
                     <User className="w-4 h-4 text-slate-500" />
-                    <span>ROLE_USER (Khách hàng)</span>
+                    <span>ROLE_USER (Khách hàng B2B)</span>
                   </div>
-                  <p className="text-[11px] text-slate-400 mt-0.5">Chỉ xem thông tin cá nhân của bệnh nhân.</p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">Khách hàng B2B tự phục vụ tra cứu hóa đơn và thanh toán VietQR.</p>
                 </div>
                 <span className="text-slate-600 font-semibold text-xs">Gán quyền</span>
               </button>

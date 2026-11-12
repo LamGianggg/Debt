@@ -36,7 +36,10 @@ export default function Topbar() {
     invoices,
     customers,
     salesOrders,
-    switchView
+    switchView,
+    language,
+    setLanguage,
+    t
   } = useDashboard();
 
   const isGuest = !isStaff;
@@ -45,7 +48,6 @@ export default function Topbar() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('English');
   const searchContainerRef = useRef(null);
 
   const activeRole = isAdmin ? 'ROLE_ADMIN' : isStaff ? 'ROLE_STAFF' : 'ROLE_USER';
@@ -106,7 +108,7 @@ export default function Topbar() {
               setGlobalSearch(e.target.value);
               setSearchFocused(true);
             }}
-            placeholder="Search Invoices, clients, VA or amounts..."
+            placeholder={t('searchPlaceholder')}
             className="w-full pl-10 pr-9 py-2 text-xs bg-[#F8FAFC] hover:bg-slate-100/60 focus:bg-white border border-slate-200/70 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-xl outline-none transition-all duration-150 text-slate-800 placeholder:text-slate-400 font-medium"
           />
 
@@ -247,7 +249,7 @@ export default function Topbar() {
           className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 border border-blue-200 hover:border-blue-400 text-blue-600 hover:bg-blue-50/50 rounded-xl text-xs font-semibold transition cursor-pointer shadow-2xs"
         >
           <Plus className="w-3.5 h-3.5" />
-          <span>Quick Create</span>
+          <span>{t('quickCreate')}</span>
         </button>
 
         {/* Language Selector */}
@@ -259,27 +261,28 @@ export default function Topbar() {
               setNotificationsOpen(false);
               setProfileDropdownOpen(false);
             }}
-            className="flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 px-2 py-1.5 rounded-lg hover:bg-slate-50 cursor-pointer transition"
+            className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer transition shadow-2xs"
           >
-            <span>{selectedLanguage}</span>
+            <span className="w-2 h-2 rounded-full bg-blue-600"></span>
+            <span>{language === 'vi' ? 'Tiếng Việt' : 'English'}</span>
             <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
           </button>
 
           {langDropdownOpen && (
             <div className="absolute right-0 mt-2 w-36 bg-white rounded-xl shadow-soft-lg border border-slate-100 py-1.5 z-50 text-xs">
               <button
-                onClick={() => { setSelectedLanguage('English'); setLangDropdownOpen(false); }}
-                className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-slate-50 cursor-pointer ${selectedLanguage === 'English' ? 'text-blue-600 font-bold' : 'text-slate-700'}`}
+                onClick={() => { setLanguage('en'); setLangDropdownOpen(false); }}
+                className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-slate-50 cursor-pointer ${language === 'en' ? 'text-blue-600 font-bold bg-blue-50/40' : 'text-slate-700'}`}
               >
                 <span>English</span>
-                {selectedLanguage === 'English' && <Check className="w-3.5 h-3.5" />}
+                {language === 'en' && <Check className="w-3.5 h-3.5" />}
               </button>
               <button
-                onClick={() => { setSelectedLanguage('Tiếng Việt'); setLangDropdownOpen(false); }}
-                className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-slate-50 cursor-pointer ${selectedLanguage === 'Tiếng Việt' ? 'text-blue-600 font-bold' : 'text-slate-700'}`}
+                onClick={() => { setLanguage('vi'); setLangDropdownOpen(false); }}
+                className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-slate-50 cursor-pointer ${language === 'vi' ? 'text-blue-600 font-bold bg-blue-50/40' : 'text-slate-700'}`}
               >
                 <span>Tiếng Việt</span>
-                {selectedLanguage === 'Tiếng Việt' && <Check className="w-3.5 h-3.5" />}
+                {language === 'vi' && <Check className="w-3.5 h-3.5" />}
               </button>
             </div>
           )}
@@ -296,7 +299,7 @@ export default function Topbar() {
             }}
             className="flex items-center gap-1.5 text-xs font-medium text-slate-700 hover:text-slate-900 px-2.5 py-1.5 rounded-lg hover:bg-slate-50 cursor-pointer transition"
           >
-            <span>{isAdmin ? 'Company: Admin' : isStaff ? 'Company: Staff' : 'Company: Guest'}</span>
+            <span>{isAdmin ? t('companyAdmin') : isStaff ? t('companyStaff') : t('companyGuest')}</span>
             <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
           </button>
 

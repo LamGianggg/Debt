@@ -13,8 +13,9 @@ import StatusBadge from '../components/common/StatusBadge';
 import Modal from '../components/common/Modal';
 
 export default function ProductsPage() {
-  const { products, addProduct } = useDashboard();
+  const { products, addProduct, t } = useDashboard();
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTypeTab, setActiveTypeTab] = useState('ALL');
   const [newProductModal, setNewProductModal] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -24,9 +25,14 @@ export default function ProductsPage() {
   });
 
   const filtered = products.filter(p => {
+    if (activeTypeTab !== 'ALL') {
+      const b = (p.billing || '').toUpperCase();
+      if (activeTypeTab === 'RECURRING' && !b.includes('RECURRING')) return false;
+      if (activeTypeTab === 'ONE_TIME' && b.includes('RECURRING')) return false;
+    }
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
-    return p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q);
+    return (p.name || '').toLowerCase().includes(q) || (p.description || '').toLowerCase().includes(q) || (p.price || '').toLowerCase().includes(q);
   });
 
   const handleAddSubmit = (e) => {
@@ -69,21 +75,39 @@ export default function ProductsPage() {
       </div>
 
       {/* Directory Table */}
-      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
-        <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-soft-xs overflow-hidden">
+        <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
+          {/* Type Tabs */}
+          <div className="flex items-center gap-1.5 bg-slate-100/80 p-1 rounded-xl text-xs font-semibold text-slate-600">
+            {[
+              { id: 'ALL', label: t('all') },
+              { id: 'RECURRING', label: 'Định kỳ (Recurring)' },
+              { id: 'ONE_TIME', label: 'Trọn gói (One-time)' }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTypeTab(tab.id)}
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap ${
+                  activeTypeTab === tab.id
+                    ? 'bg-white text-blue-600 shadow-2xs font-bold'
+                    : 'hover:text-slate-900'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
           <div className="relative w-full sm:w-72">
             <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Tìm hợp đồng hoặc gói nợ..."
+              placeholder={t('searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 focus:bg-white border border-slate-200 focus:border-[#635BFF] rounded-lg outline-none transition text-slate-800"
+              className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 focus:bg-white border border-slate-200 focus:border-blue-500 rounded-lg outline-none transition text-slate-800"
             />
           </div>
-          <span className="text-xs text-slate-400 hidden sm:inline">
-            {filtered.length} gói hợp đồng áp dụng
-          </span>
         </div>
 
         <div className="overflow-x-auto">

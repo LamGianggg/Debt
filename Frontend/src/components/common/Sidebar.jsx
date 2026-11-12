@@ -31,7 +31,8 @@ export default function Sidebar() {
     setSidebarOpen,
     isBackendConnected,
     currentUser,
-    switchUserRole
+    switchUserRole,
+    t
   } = useDashboard();
 
   const isAdmin = !!(currentUser?.roles && currentUser.roles.includes('ROLE_ADMIN'));
@@ -40,19 +41,19 @@ export default function Sidebar() {
 
   // Fortinvo Nav Menu items mapped to views
   const navigationItems = isGuest ? [
-    { id: 'home', name: 'Dashboard', icon: LayoutDashboard },
-    { id: 'invoices', name: 'Invoices', icon: FileText, badge: 'VietQR' },
-    { id: 'ptp_disputes', name: 'PTP & Disputes', icon: Scale },
-    { id: 'payments', name: 'Payments Received', icon: CreditCard },
+    { id: 'home', name: t('dashboard'), icon: LayoutDashboard },
+    { id: 'invoices', name: t('invoices'), icon: FileText, badge: 'VietQR' },
+    { id: 'ptp_disputes', name: t('ptpDisputes'), icon: Scale },
+    { id: 'payments', name: t('paymentsReceived'), icon: CreditCard },
   ] : [
-    { id: 'home', name: 'Dashboard', icon: LayoutDashboard },
-    { id: 'invoices', name: 'Invoices', icon: FileText, badge: 'VietQR' },
-    { id: 'customers', name: 'Customers', icon: Users },
-    { id: 'products', name: 'Items', icon: Package },
-    { id: 'credit', name: 'Sales Receipts', icon: Receipt },
-    { id: 'payments', name: 'Payments Received', icon: CreditCard },
-    { id: 'bank_recon', name: 'Expenses', icon: Wallet },
-    { id: 'reports', name: 'Reports', icon: BarChart2 },
+    { id: 'home', name: t('dashboard'), icon: LayoutDashboard },
+    { id: 'invoices', name: t('invoices'), icon: FileText, badge: 'VietQR' },
+    { id: 'customers', name: t('customers'), icon: Users },
+    { id: 'products', name: t('items'), icon: Package },
+    { id: 'credit', name: t('salesReceipts'), icon: Receipt },
+    { id: 'payments', name: t('paymentsReceived'), icon: CreditCard },
+    { id: 'expenses', name: t('expenses'), icon: Wallet },
+    { id: 'reports', name: t('reports'), icon: BarChart2 },
   ];
 
   return (
@@ -151,7 +152,7 @@ export default function Sidebar() {
               >
                 <div className="flex items-center gap-3">
                   <BellRing className="w-4 h-4 text-slate-400" />
-                  <span>Dunning Worklist</span>
+                  <span>{t('dunningWorklist')}</span>
                 </div>
                 <span className="text-[10px] bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded-full font-bold">T-3..T+30</span>
               </button>
@@ -169,7 +170,7 @@ export default function Sidebar() {
               >
                 <div className="flex items-center gap-3">
                   <ShieldCheck className="w-4 h-4 text-slate-400" />
-                  <span>Maker-Checker</span>
+                  <span>{t('makerChecker')}</span>
                 </div>
                 <span className="text-[10px] bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded-full font-bold">SoD</span>
               </button>

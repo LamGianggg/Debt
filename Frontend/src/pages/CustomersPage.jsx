@@ -13,15 +13,28 @@ import { useDashboard } from '../context/DashboardContext';
 import StatusBadge from '../components/common/StatusBadge';
 import Modal from '../components/common/Modal';
 
+function getCustomerInitials(name) {
+  if (!name) return 'KH';
+  const clean = name.replace(/^(Công ty TNHH|Công ty CP|Tập Đoàn|Doanh Nghiệp|Chi Nhánh)\s+/i, '').trim();
+  const target = clean || name;
+  const words = target.split(/\s+/).filter(Boolean);
+  if (words.length >= 2) {
+    return (words[0][0] + words[1][0]).toUpperCase();
+  }
+  return target.substring(0, 2).toUpperCase();
+}
+
 export default function CustomersPage() {
   const { 
     customers, 
     viewCustomer, 
     addCustomer,
-    setActiveModal
+    setActiveModal,
+    t
   } = useDashboard();
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeStatusTab, setActiveStatusTab] = useState('ALL');
   const [newCustomerModal, setNewCustomerModal] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -31,9 +44,17 @@ export default function CustomersPage() {
   });
 
   const filteredCustomers = customers.filter(c => {
+    // Status tab filter
+    if (activeStatusTab !== 'ALL') {
+      const s = (c.status || '').toUpperCase();
+      if (activeStatusTab === 'ACTIVE' && s !== 'ACTIVE') return false;
+      if (activeStatusTab === 'WARNING' && !s.includes('WARN')) return false;
+      if (activeStatusTab === 'LOCKED' && !s.includes('LOCK')) return false;
+    }
+
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
-    return c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q) || c.id.toLowerCase().includes(q);
+    return (c.name || '').toLowerCase().includes(q) || (c.email || '').toLowerCase().includes(q) || (c.id || '').toLowerCase().includes(q) || (c.phone || '').toLowerCase().includes(q);
   });
 
   const handleAddSubmit = (e) => {
@@ -93,22 +114,41 @@ export default function CustomersPage() {
       </div>
 
       {/* Directory Table Card */}
-      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-soft-xs overflow-hidden">
         {/* Filter Bar */}
-        <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+        <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
+          {/* Status Tabs */}
+          <div className="flex items-center gap-1.5 bg-slate-100/80 p-1 rounded-xl text-xs font-semibold text-slate-600">
+            {[
+              { id: 'ALL', label: t('all') },
+              { id: 'ACTIVE', label: 'Hoạt động tốt' },
+              { id: 'WARNING', label: 'Cảnh báo nợ' },
+              { id: 'LOCKED', label: 'Khóa hạn mức' }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveStatusTab(tab.id)}
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap ${
+                  activeStatusTab === tab.id
+                    ? 'bg-white text-blue-600 shadow-2xs font-bold'
+                    : 'hover:text-slate-900'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
           <div className="relative w-full sm:w-72">
             <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Search by customer name or email..."
+              placeholder={t('searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 focus:bg-white border border-slate-200 focus:border-[#635BFF] rounded-lg outline-none transition text-slate-800"
+              className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 focus:bg-white border border-slate-200 focus:border-blue-500 rounded-lg outline-none transition text-slate-800"
             />
           </div>
-          <span className="text-xs text-slate-400 hidden sm:inline">
-            Hiển thị {filteredCustomers.length} khách nợ
-          </span>
         </div>
 
         {/* Table */}
@@ -133,24 +173,29 @@ export default function CustomersPage() {
                   className="table-row-hover cursor-pointer"
                 >
                   <td className="py-3 px-6 whitespace-nowrap">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-600 text-xs shrink-0">
-                        {cust.name.split(' ').map(n => n[0]).join('')}
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-indigo-50 border border-indigo-200/80 flex items-center justify-center font-bold text-indigo-700 text-xs shrink-0 overflow-hidden select-none">
+                        {getCustomerInitials(cust.name)}
                       </div>
-                      <span className="font-semibold text-slate-900">{cust.name}</span>
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-semibold text-slate-900">{cust.name}</span>
+                        {cust.taxCode && (
+                          <span className="text-[11px] text-slate-400 font-mono">MST: {cust.taxCode}</span>
+                        )}
+                      </div>
                     </div>
                   </td>
                   <td className="py-3 px-6 text-slate-600 whitespace-nowrap">
-                    {cust.email}
+                    {cust.email || (cust.contact ? cust.contact.split(' - ')[0] : '—')}
                   </td>
                   <td className="py-3 px-6 font-medium text-slate-800 whitespace-nowrap">
-                    {cust.totalSpent}
+                    {cust.totalSpent || cust.unpaidBalance || '—'}
                   </td>
                   <td className="py-3 px-6 text-slate-600 whitespace-nowrap">
-                    {cust.paymentsCount} payments
+                    {cust.paymentsCount !== undefined ? `${cust.paymentsCount} payments` : (cust.dso ? `DSO: ${cust.dso}d` : '—')}
                   </td>
                   <td className="py-3 px-6 text-slate-500 whitespace-nowrap">
-                    {cust.created}
+                    {cust.created || '10/11/2026'}
                   </td>
                   <td className="py-3 px-6 whitespace-nowrap">
                     <StatusBadge type={cust.status.toLowerCase() === 'active' ? 'success' : 'error'}>

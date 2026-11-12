@@ -24,7 +24,8 @@ export default function PaymentsPage() {
     refundTransaction,
     setActiveModal,
     isAdmin,
-    isStaff
+    isStaff,
+    t
   } = useDashboard();
 
   const [activeTab, setActiveTab] = useState('all');
@@ -34,18 +35,28 @@ export default function PaymentsPage() {
   // Tab filter logic
   const filteredTransactions = transactions.filter(tx => {
     // Tab match
-    if (activeTab === 'succeeded' && tx.status.toLowerCase() !== 'succeeded') return false;
-    if (activeTab === 'refunded' && tx.status.toLowerCase() !== 'refunded') return false;
-    if (activeTab === 'failed' && tx.status.toLowerCase() !== 'failed') return false;
+    const s = (tx.status || '').toUpperCase();
+    if (activeTab === 'succeeded') {
+      const isSuccess = s.includes('MATCHED') || s.includes('AUTO') || s.includes('SUCCEEDED') || s.includes('PAID');
+      if (!isSuccess) return false;
+    }
+    if (activeTab === 'hold') {
+      const isHold = s.includes('HOLD') || s.includes('PENDING') || s.includes('BUFFER');
+      if (!isHold) return false;
+    }
+    if (activeTab === 'refunded' && !s.includes('REFUND')) return false;
+    if (activeTab === 'failed' && !s.includes('FAIL')) return false;
 
     // Search query match
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      const matchCustomer = tx.customer.toLowerCase().includes(q);
+      const matchCustomer = (tx.customer || '').toLowerCase().includes(q);
       const matchEmail = (tx.customerEmail || '').toLowerCase().includes(q);
-      const matchId = tx.id.toLowerCase().includes(q);
-      const matchAmount = tx.amount.toLowerCase().includes(q);
-      return matchCustomer || matchEmail || matchId || matchAmount;
+      const matchId = (tx.id || '').toLowerCase().includes(q);
+      const matchAmount = (tx.amount || '').toLowerCase().includes(q);
+      const matchMemo = (tx.memo || '').toLowerCase().includes(q);
+      const matchDesc = (tx.description || '').toLowerCase().includes(q);
+      return matchCustomer || matchEmail || matchId || matchAmount || matchMemo || matchDesc;
     }
     return true;
   });
@@ -57,55 +68,56 @@ export default function PaymentsPage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 select-none">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            Thu Nợ & Thanh Toán Công Nợ
+            {t('paymentsTitle')}
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Theo dõi toàn bộ lịch sử thu hồi công nợ, đối soát thanh toán hợp đồng và xử lý hoàn trả tiền nợ.
+            {t('paymentsSub')}
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <button 
             onClick={() => setActiveModal('export')}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-lg border border-slate-200 shadow-xs transition cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-lg border border-slate-200 shadow-2xs transition cursor-pointer"
           >
             <Download className="w-3.5 h-3.5 text-slate-500" />
-            <span>Xuất báo cáo</span>
+            <span>{t('export')}</span>
           </button>
           
           <button 
             onClick={() => setActiveModal('new-payment')}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#635BFF] hover:bg-[#5851EA] text-white text-xs font-semibold rounded-lg shadow-xs transition cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1868DF] hover:bg-[#1255B8] text-white text-xs font-semibold rounded-lg shadow-2xs transition cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Tạo phiếu thu nợ</span>
+            <span>{t('quickCreate')}</span>
           </button>
         </div>
       </div>
 
       {/* Tabs & Search Filter Toolbar */}
-      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
-        <div className="p-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-soft-xs overflow-hidden">
+        <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
           {/* Status Tabs */}
-          <div className="flex items-center gap-1 border-b md:border-b-0 border-slate-100 pb-2 md:pb-0 overflow-x-auto text-xs font-medium">
+          <div className="flex items-center gap-1.5 bg-slate-100/80 p-1 rounded-xl text-xs font-semibold text-slate-600 overflow-x-auto">
             {[
-              { id: 'all', label: 'All' },
-              { id: 'succeeded', label: 'Succeeded' },
-              { id: 'refunded', label: 'Refunded' },
-              { id: 'failed', label: 'Failed' },
+              { id: 'all', label: t('all') },
+              { id: 'succeeded', label: 'Khớp STP (Thành công)' },
+              { id: 'hold', label: 'Đệm giữ 24h' },
+              { id: 'refunded', label: 'Hoàn tiền' },
+              { id: 'failed', label: 'Thất bại' },
             ].map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-3 py-1.5 rounded-lg transition whitespace-nowrap cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap ${
                   activeTab === tab.id
-                    ? 'bg-[#F0EFFE] text-[#635BFF] font-semibold'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    ? 'bg-white text-blue-600 shadow-2xs font-bold'
+                    : 'hover:text-slate-900'
                 }`}
               >
                 {tab.label}
@@ -114,38 +126,36 @@ export default function PaymentsPage() {
           </div>
 
           {/* Quick Search inside payments */}
-          <div className="flex items-center gap-2">
-            <div className="relative w-full sm:w-64">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Filter by customer, ID or amount..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 focus:bg-white border border-slate-200 focus:border-[#635BFF] rounded-lg outline-none transition text-slate-800"
-              />
-            </div>
+          <div className="relative w-full sm:w-72">
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder={t('searchPlaceholder')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-8 pr-7 py-1.5 text-xs bg-slate-50 focus:bg-white border border-slate-200 focus:border-blue-500 rounded-lg outline-none transition text-slate-800"
+            />
           </div>
         </div>
 
         {/* Transactions Table */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/75 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                <th className="py-2.5 px-6">Amount</th>
-                <th className="py-2.5 px-6">Status</th>
-                <th className="py-2.5 px-6">Description</th>
-                <th className="py-2.5 px-6">Customer</th>
-                <th className="py-2.5 px-6">Method</th>
-                <th className="py-2.5 px-6">Date</th>
+              <tr className="border-b border-slate-100 bg-[#F8FAFC] text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                <th className="py-3 px-6">{t('amount')}</th>
+                <th className="py-3 px-6">{t('status')}</th>
+                <th className="py-3 px-6">{t('description')}</th>
+                <th className="py-3 px-6">{t('client')}</th>
+                <th className="py-3 px-6">{t('method')}</th>
+                <th className="py-3 px-6">{t('time')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-xs">
               {filteredTransactions.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-slate-400 text-xs">
-                    No transactions match your current filter.
+                    {t('noDataMatch')}
                   </td>
                 </tr>
               ) : (
@@ -153,33 +163,49 @@ export default function PaymentsPage() {
                   <tr
                     key={tx.id}
                     onClick={() => setSelectedTransaction(tx)}
-                    className="table-row-hover cursor-pointer"
+                    className="hover:bg-slate-50/70 transition-colors cursor-pointer"
                   >
-                    <td className="py-3 px-6 font-semibold text-slate-900 whitespace-nowrap">
+                    <td className="py-3.5 px-6 font-bold font-mono text-slate-900 whitespace-nowrap">
                       {tx.amount}
                     </td>
-                    <td className="py-3 px-6 whitespace-nowrap">
-                      <StatusBadge type={tx.statusType}>
-                        {tx.status} {tx.status === 'Succeeded' && '✓'}
-                      </StatusBadge>
+                    <td className="py-3.5 px-6 whitespace-nowrap">
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                        tx.statusType === 'success' || tx.status === 'MATCHED_STP' || tx.status === 'AUTO_WRITE_OFF'
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          : tx.statusType === 'warning' || tx.status === 'HOLD_BUFFER_24H'
+                            ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                            : 'bg-blue-50 text-blue-700 border border-blue-200'
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${
+                          tx.statusType === 'success' ? 'bg-emerald-500' : tx.statusType === 'warning' ? 'bg-amber-500' : 'bg-blue-500'
+                        }`} />
+                        <span>{tx.status}</span>
+                      </span>
                     </td>
-                    <td className="py-3 px-6 text-slate-600 max-w-xs truncate">
-                      {tx.description}
+                    <td className="py-3.5 px-6 text-slate-800 font-semibold max-w-xs">
+                      <div>{tx.description || tx.memo}</div>
+                      <div className="text-[10px] text-slate-400 font-mono mt-0.5">{tx.id}</div>
                     </td>
-                    <td className="py-3 px-6 text-slate-700 font-medium whitespace-nowrap">
-                      {tx.customer}
+                    <td className="py-3.5 px-6 text-slate-700 font-medium whitespace-nowrap">
+                      <div>{tx.customer}</div>
+                      {tx.customerEmail && <div className="text-[10px] text-slate-400">{tx.customerEmail}</div>}
                     </td>
-                    <td className="py-3 px-6 text-slate-500 font-mono text-[11px] whitespace-nowrap">
-                      {tx.method}
+                    <td className="py-3.5 px-6 text-slate-500 font-mono text-[11px] whitespace-nowrap">
+                      {tx.method || `${tx.bank || 'VietinBank'} VA • ${tx.vaNumber || '9688600129'}`}
                     </td>
-                    <td className="py-3 px-6 text-slate-500 whitespace-nowrap">
-                      {tx.date}
+                    <td className="py-3.5 px-6 text-slate-500 whitespace-nowrap">
+                      {tx.time || tx.date}
                     </td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Footer record counter */}
+        <div className="p-3 bg-slate-50/70 border-t border-slate-100 text-slate-400 text-xs text-right pr-6">
+          {t('showing')} {filteredTransactions.length} / {transactions.length} {t('records')}
         </div>
       </div>
 
