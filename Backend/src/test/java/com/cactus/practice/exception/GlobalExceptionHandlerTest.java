@@ -55,13 +55,23 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    void testHandleAccessDenied() {
+        org.springframework.security.access.AccessDeniedException ex = new org.springframework.security.access.AccessDeniedException("Forbidden");
+        ResponseEntity<ApiResponse<Void>> response = exceptionHandler.handleAccessDenied(ex);
+
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertFalse(response.getBody().isSuccess());
+        assertTrue(response.getBody().getMessage().contains("Access denied"));
+    }
+
+    @Test
     void testHandleGeneralException() {
         Exception ex = new RuntimeException("Database timeout");
         ResponseEntity<ApiResponse<Void>> response = exceptionHandler.handleGeneralException(ex);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertFalse(response.getBody().isSuccess());
-        assertTrue(response.getBody().getMessage().contains("Database timeout"));
+        assertTrue(response.getBody().getMessage().contains("unexpected internal error"));
     }
 
     @Test

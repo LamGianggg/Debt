@@ -7,7 +7,7 @@ async function request(endpoint, options = {}) {
   const url = `${API_BASE}${endpoint}`;
   const token = localStorage.getItem('cactus_token');
   const savedUser = localStorage.getItem('cactus_user');
-  let currentRole = 'ROLE_ADMIN';
+  let currentRole = 'ROLE_USER';
   if (savedUser) {
     try {
       const u = JSON.parse(savedUser);

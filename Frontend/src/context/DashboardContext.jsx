@@ -88,13 +88,6 @@ export function DashboardProvider({ children }) {
       localStorage.setItem('cactus_user', JSON.stringify(userObj));
       return { success: true };
     } catch (e) {
-      if (username === 'admin') {
-        switchUserRole('ROLE_ADMIN');
-        return { success: true };
-      } else if (username === 'staff') {
-        switchUserRole('ROLE_STAFF');
-        return { success: true };
-      }
       return { success: false, error: e.message };
     }
   };

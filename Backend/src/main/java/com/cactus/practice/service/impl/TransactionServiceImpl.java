@@ -186,6 +186,9 @@ public class TransactionServiceImpl implements TransactionService {
 
     private String escapeCsv(String val) {
         if (val == null) return "\"\"";
+        if (!val.isEmpty() && "=+-@\t\r".indexOf(val.charAt(0)) >= 0) {
+            val = "'" + val;
+        }
         return "\"" + val.replace("\"", "\"\"") + "\"";
     }
 }

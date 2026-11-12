@@ -398,4 +398,38 @@ class EntityAndDtoTest {
         assertFalse(ud.isEnabled());
         assertEquals(1, ud.getRoles().size());
     }
+
+    @Test
+    void testO2CDtos() {
+        O2CDtos parent = new O2CDtos();
+        assertNotNull(parent);
+
+        O2CDtos.SalesOrderDto so = new O2CDtos.SalesOrderDto();
+        so.setId("SO-1");
+        assertEquals("SO-1", so.getId());
+
+        O2CDtos.InvoiceDto inv = new O2CDtos.InvoiceDto();
+        inv.setId("INV-1");
+        assertEquals("INV-1", inv.getId());
+
+        O2CDtos.DunningItemDto dun = new O2CDtos.DunningItemDto();
+        dun.setId("DUN-1");
+        assertEquals("DUN-1", dun.getId());
+
+        O2CDtos.PtpDisputeDto ptp = new O2CDtos.PtpDisputeDto();
+        ptp.setId("PTP-1");
+        assertEquals("PTP-1", ptp.getId());
+
+        O2CDtos.BankReconciliationDto br = new O2CDtos.BankReconciliationDto();
+        br.setTxId("TX-1");
+        assertEquals("TX-1", br.getTxId());
+
+        O2CDtos.MakerCheckerDto mc = new O2CDtos.MakerCheckerDto();
+        mc.setId("MC-1");
+        assertEquals("MC-1", mc.getId());
+
+        O2CDtos.O2CKpisDto kpis = new O2CDtos.O2CKpisDto();
+        kpis.setDsoDays("42 ngày");
+        assertEquals("42 ngày", kpis.getDsoDays());
+    }
 }

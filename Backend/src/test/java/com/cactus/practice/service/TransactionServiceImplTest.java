@@ -132,4 +132,15 @@ class TransactionServiceImplTest {
         assertNotNull(csv);
         assertTrue(new String(csv).contains("Hoang Phat"));
     }
+
+    @Test
+    void testExportCsv_SanitizesFormulaInjection() {
+        Transaction tx = new Transaction("ch_2", "$100.00 USD", "$100.00 USD", "$0.00 USD", "$100.00 USD", "Succeeded", "success", "=CMD|' /C calc'!A0", "hp@example.com", "Visa", "Nov 01, 2026", new BigDecimal("100.00"), "@sum(1,2)");
+        when(transactionRepository.findAllByOrderByCreatedAtDesc()).thenReturn(Collections.singletonList(tx));
+
+        byte[] csv = transactionService.exportCsv();
+        String content = new String(csv);
+        assertTrue(content.contains("\"'=CMD|' /C calc'!A0\""));
+        assertTrue(content.contains("\"'@sum(1,2)\""));
+    }
 }

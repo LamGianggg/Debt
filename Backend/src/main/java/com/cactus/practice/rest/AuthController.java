@@ -85,24 +85,7 @@ public class AuthController {
                 signUpRequest.getEmail()
         );
 
-        Set<String> strRoles = signUpRequest.getRoles();
-        Set<RoleType> roles = new HashSet<>();
-
-        if (strRoles == null || strRoles.isEmpty()) {
-            roles.add(RoleType.ROLE_USER);
-        } else {
-            strRoles.forEach(role -> {
-                if ("admin".equalsIgnoreCase(role)) {
-                    roles.add(RoleType.ROLE_ADMIN);
-                } else if ("staff".equalsIgnoreCase(role)) {
-                    roles.add(RoleType.ROLE_STAFF);
-                } else {
-                    roles.add(RoleType.ROLE_USER);
-                }
-            });
-        }
-
-        user.setRoles(roles);
+        user.setRoles(Set.of(RoleType.ROLE_USER));
         userRepository.save(user);
 
         return ResponseEntity.ok(ApiResponse.ok("User registered successfully!", user.getUsername()));

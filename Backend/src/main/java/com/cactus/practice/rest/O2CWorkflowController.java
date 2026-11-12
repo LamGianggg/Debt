@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class O2CWorkflowController {
     @GetMapping("/kpis")
     @Operation(summary = "Get high-level O2C executive AR KPIs (DSO, CEI, Aging brackets, Auto-match rate)")
     public ResponseEntity<ApiResponse<O2CKpisDto>> getKpis(
-            @RequestHeader(value = "X-User-Role", required = false, defaultValue = "ROLE_ADMIN") String userRole
+            @RequestHeader(value = "X-User-Role", required = false, defaultValue = "ROLE_USER") String userRole
     ) {
         return ResponseEntity.ok(ApiResponse.ok("O2C KPIs retrieved", o2cService.getKpis()));
     }
@@ -40,11 +41,12 @@ public class O2CWorkflowController {
     }
 
     @PostMapping("/orders/{id}/approve")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Maker-Checker approval to release a credit-blocked order (ROLE_ADMIN required)")
     public ResponseEntity<ApiResponse<SalesOrderDto>> approveOrder(
             @PathVariable String id,
             @RequestParam(defaultValue = "Admin / Credit Manager") String approver,
-            @RequestHeader(value = "X-User-Role", required = false, defaultValue = "ROLE_ADMIN") String userRole
+            @RequestHeader(value = "X-User-Role", required = false, defaultValue = "ROLE_USER") String userRole
     ) {
         if (!"ROLE_ADMIN".equalsIgnoreCase(userRole)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -78,9 +80,10 @@ public class O2CWorkflowController {
     }
 
     @GetMapping("/dunning")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Operation(summary = "Get automated collection dunning worklist across T-3 to T+30 cadences (Internal Staff/Admin only)")
     public ResponseEntity<ApiResponse<?>> getDunningWorklist(
-            @RequestHeader(value = "X-User-Role", required = false, defaultValue = "ROLE_ADMIN") String userRole
+            @RequestHeader(value = "X-User-Role", required = false, defaultValue = "ROLE_USER") String userRole
     ) {
         if ("ROLE_USER".equalsIgnoreCase(userRole) || "GUEST".equalsIgnoreCase(userRole)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -90,10 +93,11 @@ public class O2CWorkflowController {
     }
 
     @PostMapping("/dunning/{id}/send")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Operation(summary = "Trigger multi-channel automated reminder (Email, ZNS, Official Letter)")
     public ResponseEntity<ApiResponse<?>> sendDunningNotice(
             @PathVariable String id,
-            @RequestHeader(value = "X-User-Role", required = false, defaultValue = "ROLE_ADMIN") String userRole
+            @RequestHeader(value = "X-User-Role", required = false, defaultValue = "ROLE_USER") String userRole
     ) {
         if ("ROLE_USER".equalsIgnoreCase(userRole) || "GUEST".equalsIgnoreCase(userRole)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -120,11 +124,12 @@ public class O2CWorkflowController {
     }
 
     @PostMapping("/disputes/{id}/resolve")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Resolve dispute ticket within 72h SLA with credit memo / adjustment (ROLE_ADMIN required)")
     public ResponseEntity<ApiResponse<PtpDisputeDto>> resolveDispute(
             @PathVariable String id,
             @RequestBody Map<String, String> body,
-            @RequestHeader(value = "X-User-Role", required = false, defaultValue = "ROLE_ADMIN") String userRole
+            @RequestHeader(value = "X-User-Role", required = false, defaultValue = "ROLE_USER") String userRole
     ) {
         if (!"ROLE_ADMIN".equalsIgnoreCase(userRole)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -139,9 +144,10 @@ public class O2CWorkflowController {
     }
 
     @GetMapping("/reconciliation")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Operation(summary = "Get 4-tier bank feeds and automated cash matching status (Internal Staff/Admin only)")
     public ResponseEntity<ApiResponse<?>> getReconciliation(
-            @RequestHeader(value = "X-User-Role", required = false, defaultValue = "ROLE_ADMIN") String userRole
+            @RequestHeader(value = "X-User-Role", required = false, defaultValue = "ROLE_USER") String userRole
     ) {
         if ("ROLE_USER".equalsIgnoreCase(userRole) || "GUEST".equalsIgnoreCase(userRole)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -151,10 +157,11 @@ public class O2CWorkflowController {
     }
 
     @PostMapping("/reconciliation/{txId}/de-minimis")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Apply De Minimis policy write-off (diff <= 50,000 VND) (ROLE_ADMIN required)")
     public ResponseEntity<ApiResponse<BankReconciliationDto>> applyDeMinimis(
             @PathVariable String txId,
-            @RequestHeader(value = "X-User-Role", required = false, defaultValue = "ROLE_ADMIN") String userRole
+            @RequestHeader(value = "X-User-Role", required = false, defaultValue = "ROLE_USER") String userRole
     ) {
         if (!"ROLE_ADMIN".equalsIgnoreCase(userRole)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -168,9 +175,10 @@ public class O2CWorkflowController {
     }
 
     @GetMapping("/maker-checker")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Operation(summary = "Get Maker-Checker dual control pending approvals (Internal Staff/Admin only)")
     public ResponseEntity<ApiResponse<?>> getMakerChecker(
-            @RequestHeader(value = "X-User-Role", required = false, defaultValue = "ROLE_ADMIN") String userRole
+            @RequestHeader(value = "X-User-Role", required = false, defaultValue = "ROLE_USER") String userRole
     ) {
         if ("ROLE_USER".equalsIgnoreCase(userRole) || "GUEST".equalsIgnoreCase(userRole)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -180,11 +188,12 @@ public class O2CWorkflowController {
     }
 
     @PostMapping("/maker-checker/{id}/process")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Process Maker-Checker approval or rejection (ROLE_ADMIN / Checker required)")
     public ResponseEntity<ApiResponse<MakerCheckerDto>> processMakerChecker(
             @PathVariable String id,
             @RequestBody Map<String, Object> body,
-            @RequestHeader(value = "X-User-Role", required = false, defaultValue = "ROLE_ADMIN") String userRole
+            @RequestHeader(value = "X-User-Role", required = false, defaultValue = "ROLE_USER") String userRole
     ) {
         String role = body != null && body.containsKey("role") ? String.valueOf(body.get("role")) : userRole;
         if (!"ROLE_ADMIN".equalsIgnoreCase(role)) {

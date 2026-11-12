@@ -95,11 +95,11 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints (Auth, Swagger, API for frontend dashboard)
                         .requestMatchers(
-                                "/api/**",
+                                "/api/auth/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/actuator/**"
+                                "/actuator/health"
                         ).permitAll()
                         .anyRequest().authenticated()
                 );
